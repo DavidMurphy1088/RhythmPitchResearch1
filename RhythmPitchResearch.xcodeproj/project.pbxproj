@@ -16,6 +16,21 @@
 		7B218B4B2A424FCA00EA4B08 /* RhythmPitchResearchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B218B4A2A424FCA00EA4B08 /* RhythmPitchResearchTests.swift */; };
 		7B218B552A424FCA00EA4B08 /* RhythmPitchResearchUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B218B542A424FCA00EA4B08 /* RhythmPitchResearchUITests.swift */; };
 		7B218B572A424FCA00EA4B08 /* RhythmPitchResearchUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B218B562A424FCA00EA4B08 /* RhythmPitchResearchUITestsLaunchTests.swift */; };
+		7B218B652A42510800EA4B08 /* ChartView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B218B642A42510800EA4B08 /* ChartView.swift */; };
+		7B218B682A4255D600EA4B08 /* Audio.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B218B672A4255D600EA4B08 /* Audio.swift */; };
+		7B218B6B2A4256B100EA4B08 /* Example 1.wav in Resources */ = {isa = PBXBuildFile; fileRef = 7B218B6A2A4256B000EA4B08 /* Example 1.wav */; };
+		7B218B6C2A4256B100EA4B08 /* Example 1.wav in Resources */ = {isa = PBXBuildFile; fileRef = 7B218B6A2A4256B000EA4B08 /* Example 1.wav */; };
+		7B218B6D2A4256B100EA4B08 /* Example 1.wav in Resources */ = {isa = PBXBuildFile; fileRef = 7B218B6A2A4256B000EA4B08 /* Example 1.wav */; };
+		7B218B6F2A4256C400EA4B08 /* Example 7_sequenced.wav in Resources */ = {isa = PBXBuildFile; fileRef = 7B218B6E2A4256C400EA4B08 /* Example 7_sequenced.wav */; };
+		7B218B702A4256C400EA4B08 /* Example 7_sequenced.wav in Resources */ = {isa = PBXBuildFile; fileRef = 7B218B6E2A4256C400EA4B08 /* Example 7_sequenced.wav */; };
+		7B218B712A4256C400EA4B08 /* Example 7_sequenced.wav in Resources */ = {isa = PBXBuildFile; fileRef = 7B218B6E2A4256C400EA4B08 /* Example 7_sequenced.wav */; };
+		7B218B732A4257C000EA4B08 /* Ex1_Sine_9_Notes.wav in Resources */ = {isa = PBXBuildFile; fileRef = 7B218B722A4257C000EA4B08 /* Ex1_Sine_9_Notes.wav */; };
+		7B218B742A4257C000EA4B08 /* Ex1_Sine_9_Notes.wav in Resources */ = {isa = PBXBuildFile; fileRef = 7B218B722A4257C000EA4B08 /* Ex1_Sine_9_Notes.wav */; };
+		7B218B752A4257C000EA4B08 /* Ex1_Sine_9_Notes.wav in Resources */ = {isa = PBXBuildFile; fileRef = 7B218B722A4257C000EA4B08 /* Ex1_Sine_9_Notes.wav */; };
+		7B218B772A42E98600EA4B08 /* Ex1_Sine.wav in Resources */ = {isa = PBXBuildFile; fileRef = 7B218B762A42E98600EA4B08 /* Ex1_Sine.wav */; };
+		7B218B782A42E98600EA4B08 /* Ex1_Sine.wav in Resources */ = {isa = PBXBuildFile; fileRef = 7B218B762A42E98600EA4B08 /* Ex1_Sine.wav */; };
+		7B218B792A42E98600EA4B08 /* Ex1_Sine.wav in Resources */ = {isa = PBXBuildFile; fileRef = 7B218B762A42E98600EA4B08 /* Ex1_Sine.wav */; };
+		7B83DDC32A44F70200E6BDD9 /* Ex1_Sine_Short.wav in Resources */ = {isa = PBXBuildFile; fileRef = 7B83DDC22A44F70200E6BDD9 /* Ex1_Sine_Short.wav */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -49,6 +64,13 @@
 		7B218B502A424FCA00EA4B08 /* RhythmPitchResearchUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = RhythmPitchResearchUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		7B218B542A424FCA00EA4B08 /* RhythmPitchResearchUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RhythmPitchResearchUITests.swift; sourceTree = "<group>"; };
 		7B218B562A424FCA00EA4B08 /* RhythmPitchResearchUITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RhythmPitchResearchUITestsLaunchTests.swift; sourceTree = "<group>"; };
+		7B218B642A42510800EA4B08 /* ChartView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChartView.swift; sourceTree = "<group>"; };
+		7B218B672A4255D600EA4B08 /* Audio.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Audio.swift; sourceTree = "<group>"; };
+		7B218B6A2A4256B000EA4B08 /* Example 1.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = "Example 1.wav"; sourceTree = "<group>"; };
+		7B218B6E2A4256C400EA4B08 /* Example 7_sequenced.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = "Example 7_sequenced.wav"; sourceTree = "<group>"; };
+		7B218B722A4257C000EA4B08 /* Ex1_Sine_9_Notes.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = Ex1_Sine_9_Notes.wav; sourceTree = "<group>"; };
+		7B218B762A42E98600EA4B08 /* Ex1_Sine.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = Ex1_Sine.wav; sourceTree = "<group>"; };
+		7B83DDC22A44F70200E6BDD9 /* Ex1_Sine_Short.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = Ex1_Sine_Short.wav; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -99,6 +121,9 @@
 		7B218B322A424FC600EA4B08 /* RhythmPitchResearch */ = {
 			isa = PBXGroup;
 			children = (
+				7B218B692A42567800EA4B08 /* Sounds */,
+				7B218B662A4255C200EA4B08 /* Models */,
+				7B218B632A4250E900EA4B08 /* Views */,
 				7B218B332A424FC600EA4B08 /* RhythmPitchResearchApp.swift */,
 				7B218B352A424FC600EA4B08 /* ContentView.swift */,
 				7B218B372A424FC900EA4B08 /* Assets.xcassets */,
@@ -133,6 +158,34 @@
 				7B218B562A424FCA00EA4B08 /* RhythmPitchResearchUITestsLaunchTests.swift */,
 			);
 			path = RhythmPitchResearchUITests;
+			sourceTree = "<group>";
+		};
+		7B218B632A4250E900EA4B08 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				7B218B642A42510800EA4B08 /* ChartView.swift */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+		7B218B662A4255C200EA4B08 /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				7B218B672A4255D600EA4B08 /* Audio.swift */,
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
+		7B218B692A42567800EA4B08 /* Sounds */ = {
+			isa = PBXGroup;
+			children = (
+				7B218B762A42E98600EA4B08 /* Ex1_Sine.wav */,
+				7B218B722A4257C000EA4B08 /* Ex1_Sine_9_Notes.wav */,
+				7B218B6E2A4256C400EA4B08 /* Example 7_sequenced.wav */,
+				7B83DDC22A44F70200E6BDD9 /* Ex1_Sine_Short.wav */,
+				7B218B6A2A4256B000EA4B08 /* Example 1.wav */,
+			);
+			path = Sounds;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -240,7 +293,12 @@
 			buildActionMask = 2147483647;
 			files = (
 				7B218B3B2A424FC900EA4B08 /* Preview Assets.xcassets in Resources */,
+				7B83DDC32A44F70200E6BDD9 /* Ex1_Sine_Short.wav in Resources */,
 				7B218B382A424FC900EA4B08 /* Assets.xcassets in Resources */,
+				7B218B732A4257C000EA4B08 /* Ex1_Sine_9_Notes.wav in Resources */,
+				7B218B6F2A4256C400EA4B08 /* Example 7_sequenced.wav in Resources */,
+				7B218B772A42E98600EA4B08 /* Ex1_Sine.wav in Resources */,
+				7B218B6B2A4256B100EA4B08 /* Example 1.wav in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -248,6 +306,10 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				7B218B782A42E98600EA4B08 /* Ex1_Sine.wav in Resources */,
+				7B218B702A4256C400EA4B08 /* Example 7_sequenced.wav in Resources */,
+				7B218B742A4257C000EA4B08 /* Ex1_Sine_9_Notes.wav in Resources */,
+				7B218B6C2A4256B100EA4B08 /* Example 1.wav in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -255,6 +317,10 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				7B218B792A42E98600EA4B08 /* Ex1_Sine.wav in Resources */,
+				7B218B712A4256C400EA4B08 /* Example 7_sequenced.wav in Resources */,
+				7B218B752A4257C000EA4B08 /* Ex1_Sine_9_Notes.wav in Resources */,
+				7B218B6D2A4256B100EA4B08 /* Example 1.wav in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -265,9 +331,11 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				7B218B682A4255D600EA4B08 /* Audio.swift in Sources */,
 				7B218B3D2A424FC900EA4B08 /* Persistence.swift in Sources */,
 				7B218B362A424FC600EA4B08 /* ContentView.swift in Sources */,
 				7B218B402A424FC900EA4B08 /* RhythmPitchResearch.xcdatamodeld in Sources */,
+				7B218B652A42510800EA4B08 /* ChartView.swift in Sources */,
 				7B218B342A424FC600EA4B08 /* RhythmPitchResearchApp.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

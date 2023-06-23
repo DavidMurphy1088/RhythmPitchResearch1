@@ -1,85 +1,62 @@
-//
-//  ContentView.swift
-//  RhythmPitchResearch
-//
-//  Created by David Murphy on 6/21/23.
-//
-
 import SwiftUI
 import CoreData
+import Foundation
 
 struct ContentView: View {
-    @Environment(\.managedObjectContext) private var viewContext
+//    @State var dataPoints:[Float]=[]
+    @ObservedObject var audio = Audio()
+    let name = "Example 1"
+    @State var offset:Double = 0.0
+    @State var windowSizePercent:Double = 33.0
 
-    @FetchRequest(
-        sortDescriptors: [NSSortDescriptor(keyPath: \Item.timestamp, ascending: true)],
-        animation: .default)
-    private var items: FetchedResults<Item>
-
+    func getOffset() -> Int {
+        return (Int(self.offset) / 1000) * 1000
+    }
+    
     var body: some View {
-        NavigationView {
-            List {
-                ForEach(items) { item in
-                    NavigationLink {
-                        Text("Item at \(item.timestamp!, formatter: itemFormatter)")
-                    } label: {
-                        Text(item.timestamp!, formatter: itemFormatter)
-                    }
+        VStack {
+            Text("Test")
+            HStack {
+                Button(action: {
+                    audio.readFile(name: name)
+                    audio.segmentFile(name:name)
+                    audio.getNoteOnsets(name: name)
+                    //audio.publish(offset: Int(offset), windowSize: windowSize)
+                }) {
+                    Text("Segment Audio File")
                 }
-                .onDelete(perform: deleteItems)
-            }
-            .toolbar {
-                ToolbarItem {
-                    Button(action: addItem) {
-                        Label("Add Item", systemImage: "plus")
-                    }
+                Button(action: {
+                    audio.publish(offset: Int(offset), windowSizePercent: windowSizePercent)
+                }) {
+                    Text("Publish")
                 }
+                .padding()
             }
-            Text("Select an item")
-        }
-    }
-
-    private func addItem() {
-        withAnimation {
-            let newItem = Item(context: viewContext)
-            newItem.timestamp = Date()
-
-            do {
-                try viewContext.save()
-            } catch {
-                // Replace this implementation with code to handle the error appropriately.
-                // fatalError() causes the application to generate a crash log and terminate. You should not use this function in a shipping application, although it may be useful during development.
-                let nsError = error as NSError
-                fatalError("Unresolved error \(nsError), \(nsError.userInfo)")
+            
+            HStack {
+                Text("Offset:\(String(format: "%.0f", self.offset))").padding()
+                Slider(value: self.$offset, in: 0.0...25000.0).padding()
+                Text("Window:\(String(format: "%.0f", self.windowSizePercent))%").padding()
+                Slider(value: self.$windowSizePercent, in: 0.0...100.0).padding()
             }
-        }
-    }
+            
+            .padding()
+            
+            ChartView(dataPoints: audio.segmentAveragesPublished,
+                      markers: audio.noteStartSegmentsPublished,
+                      title: "Sample Averages",
+                      segmentOffset: getOffset())
+                    .border(Color.indigo)
+                    .padding(.horizontal)
 
-    private func deleteItems(offsets: IndexSet) {
-        withAnimation {
-            offsets.map { items[$0] }.forEach(viewContext.delete)
-
-            do {
-                try viewContext.save()
-            } catch {
-                // Replace this implementation with code to handle the error appropriately.
-                // fatalError() causes the application to generate a crash log and terminate. You should not use this function in a shipping application, although it may be useful during development.
-                let nsError = error as NSError
-                fatalError("Unresolved error \(nsError), \(nsError.userInfo)")
-            }
         }
+//        .onAppear() {
+//            for i in 0..<100 {
+//                let s = sin(Double(i)) * 10.0
+//                dataPoints.append(Float(s))
+//            }
+//        }
     }
+        
 }
 
-private let itemFormatter: DateFormatter = {
-    let formatter = DateFormatter()
-    formatter.dateStyle = .short
-    formatter.timeStyle = .medium
-    return formatter
-}()
-
-struct ContentView_Previews: PreviewProvider {
-    static var previews: some View {
-        ContentView().environment(\.managedObjectContext, PersistenceController.preview.container.viewContext)
-    }
-}

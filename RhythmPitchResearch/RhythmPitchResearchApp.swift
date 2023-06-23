@@ -1,9 +1,3 @@
-//
-//  RhythmPitchResearchApp.swift
-//  RhythmPitchResearch
-//
-//  Created by David Murphy on 6/21/23.
-//
 
 import SwiftUI
 
