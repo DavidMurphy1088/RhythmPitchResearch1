@@ -323,7 +323,6 @@ class Audio : ObservableObject {
             correctCtr += 1
     }
     
-    
     func subArray(array:[Float], at:Int, fwd: Bool, len:Int) -> [Float] {
         var res:[Float] = []
         let sign = 1.0 //array[at] < 0.0 ? -1.0 : 1.0
