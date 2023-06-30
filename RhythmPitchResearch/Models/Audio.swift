@@ -298,36 +298,31 @@ class Audio : ObservableObject {
         let exampleData = ExampleData().getData(key: "Grade 1.Playing.\(exName)")
         var recordedIndex = 0
         var adjust:Double?
+        let correctNotes = getCorrectNotes(fileName: self.fileName)
         print("\n=== Correct === \(self.fileName)")
-        if let entries = exampleData {
-            var correctCtr = 0
-            for entry in entries {
-                if entry is Note {
-                    let correctNote = entry as! Note
-                    if recordedIndex >= noteOffsets.count {
-                        print("=============== Too few notes")
-                        break
-                    }
-
-                    let recordedNote = noteOffsets[recordedIndex]
-                    if recordedIndex == 0 {
-                        let segs = recordedNote.duration()
-                        adjust = segs / correctNote.getValue()
-                    }
-
-                    let diff = recordedNote.duration() - correctNote.getValue()
-                    let adjDiff = diff / adjust!
-
-                    let percentDiff = abs(adjDiff - correctNote.getValue()) / correctNote.getValue()
-                    let ok = percentDiff < 0.15
-                    print("  ctr:", correctCtr, "correctValue:", correctNote.getValue(),
-                          "\t\tvalue:", str(adjDiff), "\t%:\(str(percentDiff))", "\t\tOK:", ok)
-                    recordedIndex += 1
-                    correctCtr += 1
-                }
+        for correctNote in correctNotes()
+            if recordedIndex >= noteOffsets.count {
+                print("=============== Too few notes")
+                break
             }
-        }
+
+            let recordedNote = noteOffsets[recordedIndex]
+            if recordedIndex == 0 {
+                let segs = recordedNote.duration()
+                adjust = segs / correctNote.getValue()
+            }
+
+            let diff = recordedNote.duration() - correctNote.getValue()
+            let adjDiff = diff / adjust!
+
+            let percentDiff = abs(adjDiff - correctNote.getValue()) / correctNote.getValue()
+            let ok = percentDiff < 0.15
+            print("  ctr:", correctCtr, "correctValue:", correctNote.getValue(),
+                  "\t\tvalue:", str(adjDiff), "\t%:\(str(percentDiff))", "\t\tOK:", ok)
+            recordedIndex += 1
+            correctCtr += 1
     }
+    
     
     func subArray(array:[Float], at:Int, fwd: Bool, len:Int) -> [Float] {
         var res:[Float] = []
@@ -510,8 +505,22 @@ class Audio : ObservableObject {
 //        }
 
         fft.calculate(self, arrayToDouble(inArray), publish: publish)
-        
     }
 
-
+    func getCorrectNotes(fileName:String) -> [Note] {
+        let cnt = self.fileName.count
+        let exName = fileName.prefix(cnt-7)
+        let exampleData = ExampleData().getData(key: "Grade 1.Playing.\(exName)")
+        var result:[Note] = []
+        if let entries = exampleData {
+            var correctCtr = 0
+            for entry in entries {
+                if entry is Note {
+                    let correctNote = entry as! Note
+                    result.append(correctNote)
+                }
+            }
+        }
+        return result
+    }
 }
