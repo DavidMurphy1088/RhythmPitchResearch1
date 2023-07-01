@@ -3,27 +3,25 @@ import Foundation
 import AVFoundation
 import Accelerate
 
-//////////////////////////
-
 class ValWithTag : Hashable {
-    var idx:Int
+    var xValue:Int
     //var val:Float
     var val:Double
     var tag:Int
     
-    init(idx:Int, val:Double, _ tag:Int) {
-        self.idx = idx
+    init(xValue:Int, val:Double, tag:Int) {
+        self.xValue = xValue
         self.val = val
         self.tag = tag
     }
-    init(idx:Int, val:Float, _ tag:Int) {
-        self.idx = idx
+    init(xValue:Int, val:Float, tag:Int) {
+        self.xValue = xValue
         self.val = Double(val)
         self.tag = tag
     }
 
     static func == (lhs: ValWithTag, rhs: ValWithTag) -> Bool {
-        return lhs.idx == rhs.idx
+        return lhs.xValue == rhs.xValue
     }
 
     func hash(into hasher: inout Hasher) {
@@ -52,18 +50,19 @@ class Audio : ObservableObject {
     var audioBufferFrames:[Float] = []
     
     var segmentAverages:[Float] = []
-    //@Published var segmentAveragesPublished:[ValWithTag] = []
+    var noteOffsets:[NoteOffset] = []
+    
     @Published var segmentAveragesPublished:[ValWithTag] = []
+    @Published var markersPublished:[ValWithTag] = []
 
+    //@Published var noteStartSegmentsPublished:[ValWithTag] = []
+    //@Published
+    
     var fourierTransformOutput:[Double] = []
     var fourierImaginaryPart:[Double] = []
     var splitComplex:DSPDoubleSplitComplex?
     @Published var fourierTransformOutputPublished:[ValWithTag] = []
 
-    //var noteStartSegments:[Int] = []
-    @Published var noteStartSegmentsPublished:[ValWithTag] = []
-    @Published var noteOffsets:[NoteOffset] = []
-    
     //var milliSecondsPerSegment:Double = 0.0
     let numberFormatter = NumberFormatter()
     var segmentsPerSlice = 1
@@ -191,7 +190,7 @@ class Audio : ObservableObject {
         
         //=============== Parameters ==============
         
-        self.segmentsPerSlice = 100 // how many segments per slice either side of analysis point
+        self.segmentsPerSlice = 100 //100 // how many segments per slice either side of analysis point
         //self.segmentsPerSlice = 300 // how many segments per slice either side of analysis point
         let segmentAdvance = 0.25 // how many segments to move the analysis point forward each iteration
         let shortestNote = 0.25 //shortest note value, how far to jump ahead after a note onset detected
@@ -202,8 +201,8 @@ class Audio : ObservableObject {
         //let amplitudeChangePercentThreshold = 1.5 //trigger note onset on this change in amplitude from previous segments slice
         //let amplitudeChangePercentThreshold = 0.60 //trigger note onset on this change in amplitude from previous segments slice
         //let amplitudeChangePercentThreshold = 0.20 //trigger note onset on this change in amplitude from previous segments slice
-        let amplitudeChangePercentThreshold = 0.10 //trigger note onset on this change in amplitude from previous segments slice
-        //let amplitudeChangePercentThreshold = 0.05 //TOO LOW trigger note onset on this change in amplitude from previous segments slice
+        //let amplitudeChangePercentThreshold = 0.10 //trigger note onset on this change in amplitude from previous segments slice
+        let amplitudeChangePercentThreshold = 0.20 //trigger note onset on this change in amplitude from previous segments slice
 
         let lookAheadMS = 50 //UNUSED - How many millisec to lookahead to confirm presence of note (or is amplitude change just a bump)
         let amplitudeChangeThreshold:Float = 2.0 //UNUSED - How amplitude must change based on the max amplitude in the file
@@ -220,7 +219,9 @@ class Audio : ObservableObject {
         var segmentIdx = segmentsPerSlice
 
         self.noteOffsets = []
-
+        let correctNotes = getCorrectNotes(fileName: self.fileName)
+        var quarterNoteSegments:Int = 0
+        
         while segmentIdx < self.segmentAverages.count {
             let prev = subArray(array: self.segmentAverages, at: segmentIdx, fwd:false, len: segmentsPerSlice)
             let next = subArray(array: self.segmentAverages, at: segmentIdx, fwd:true, len: segmentsPerSlice)
@@ -245,12 +246,17 @@ class Audio : ObservableObject {
                                                         amplitudeChangePercent: amplitudeChangePercent)
                         self.noteOffsets.append(lastNoteOffset)
                         
-                        //DO FFT on the note duration
-                        let fftSegs:Int = Int(Double(segmentIdx - lastNoteSegmentIdx) / 3.0)
-                        let noteSegments = Array(segmentAverages[segmentIdx...segmentIdx + fftSegs])
-                        //self.performFourierTransform(inArray: noteSegments, publish: self.noteOffsets.count == 3)
+                        //Calc what segment the next note should be at
+                        if self.noteOffsets.count == 1 {
+                            quarterNoteSegments = segmentIdx - lastNoteSegmentIdx
+                        }
+                        //f
                         
-                        print ("    FFT segStart:", lastNoteSegmentIdx, "len:", noteSegments.count)
+                        //DO FFT on the note duration
+                        //let fftSegs:Int = Int(Double(segmentIdx - lastNoteSegmentIdx) / 3.0)
+                        //let noteSegments = Array(segmentAverages[segmentIdx...segmentIdx + fftSegs])
+                        //self.performFourierTransform(inArray: noteSegments, publish: self.noteOffsets.count == 3)
+                        //print ("    FFT segStart:", lastNoteSegmentIdx, "len:", noteSegments.count)
                     }
                 //}
                 lastNoteSegmentIdx = segmentIdx
@@ -310,6 +316,7 @@ class Audio : ObservableObject {
             }
             
             let recordedNote = noteOffsets[recordedIndex]
+            //adjust tempo based on first note recorded
             if recordedIndex == 0 {
                 let segs = recordedNote.duration()
                 adjust = segs / correctNote.getValue()
@@ -318,10 +325,10 @@ class Audio : ObservableObject {
             let diff = recordedNote.duration() - correctNote.getValue()
             let adjDiff = diff / adjust!
             
-            let percentDiff = abs(adjDiff - correctNote.getValue()) / correctNote.getValue()
-            let ok = percentDiff < 0.15
+            let percentDiff = abs(adjDiff - correctNote.getValue()) / correctNote.getValue() * 100.0
+            let ok = percentDiff < 15.0
             print("  ctr:", correctCtr, "correctValue:", correctNote.getValue(),
-                  "\t\tvalue:", str(adjDiff), "\t%:\(str(percentDiff))", "\t\tOK:", ok)
+                  "\t\trecordedValue:", str(adjDiff), "\t:\(str(percentDiff))%", "\t\tOK:", ok)
             recordedIndex += 1
             correctCtr += 1
         }
@@ -359,31 +366,26 @@ class Audio : ObservableObject {
             self.publishedCtr += 1
 
             self.segmentAveragesPublished = []
-            
+            self.markersPublished = []
+
             var segCtr = 0
+            let skip = 10
+            
             for i in 0..<pointsToPublish {
                 let idx = offset + i
                 if idx < self.segmentAverages.count {
-                    //self.segmentAveragesPublished.append(ValWithTag(i, self.segmentAverages[idx], 1))
-                    self.segmentAveragesPublished.append(ValWithTag(idx:idx, val:self.segmentAverages[idx], 0))
-                    segCtr += 1
+                    if idx % skip == 0 {
+                        //self.segmentAveragesPublished.append(ValWithTag(i, self.segmentAverages[idx], 1))
+                        self.segmentAveragesPublished.append(ValWithTag(xValue:i - offset, val:self.segmentAverages[idx], tag: 0))
+                        segCtr += 1
+                    }
+                }
+                if let marker = self.noteOffsets.first(where: { $0.startSegment == i }) {
+                    let val:Double = 0
+                    self.markersPublished.append(ValWithTag(xValue: (i - offset) / skip , val: val, tag: 1))
                 }
             }
-            //print("START published ", self.segmentAveragesPublished.count)
-
-            //publish onsets
-            var noteCtr = 0
-            for noteOffset in self.noteOffsets {
-                let first = noteOffset.startSegment - offset - self.segmentsPerSlice
-                let last  = noteOffset.startSegment - offset + self.segmentsPerSlice
-                if first >= 0 && last < self.segmentAveragesPublished.count {
-                    self.segmentAveragesPublished[first].tag = 2
-                    self.segmentAveragesPublished[noteOffset.startSegment - offset].tag = 1
-                    self.segmentAveragesPublished[last].tag = 2
-                    noteCtr += 1
-                }
-            }
-            
+            print("START published ", self.segmentAveragesPublished.count, "markers:", self.markersPublished.count)
         }
     }
     
@@ -392,7 +394,7 @@ class Audio : ObservableObject {
         self.fourierTransformOutputPublished = []
         var ctr = 0
         for f in self.fourierTransformOutput {
-            self.fourierTransformOutputPublished.append(ValWithTag(idx:ctr, val:f, 0))
+            self.fourierTransformOutputPublished.append(ValWithTag(xValue:ctr, val:f, tag: 0))
             ctr += 1
         }
     }

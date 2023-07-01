@@ -6,13 +6,14 @@ import Accelerate
 struct ChartView: View {
     let dataPoints: [ValWithTag]
     let markers: [ValWithTag]
-    //let segmentOffset:Int
+    let offset:Double
     var title:String
     let totalPoints:Int
 
-    init(dataPoints:[ValWithTag], markers:[ValWithTag], title:String) { //, segmentOffset:Int) {
+    init(dataPoints:[ValWithTag], markers:[ValWithTag], offset:Double, title:String) { //, segmentOffset:Int) {
         self.dataPoints = dataPoints
         self.markers = markers
+        self.offset = offset
         self.title = title
         //self.segmentOffset = segmentOffset
         totalPoints = self.dataPoints.count
@@ -66,7 +67,7 @@ struct ChartView: View {
             if dataPoints.count > 0 {
                 HStack {
                     //let max = 0 //dataPoints.max()
-                    Text("\(self.title) points:\(dataPoints.count) max:\(getMax()) markerCount:\(markers.count)").padding()
+                    Text("\(self.title)  - points:\(dataPoints.count) max:\(getMax()) markerCount:\(markers.count)").padding()
                 }
                 GeometryReader { geometry in
                     ZStack {
@@ -91,18 +92,28 @@ struct ChartView: View {
                             .stroke(getColor(dataPoints[index].tag), lineWidth: 2) // Customize the line appearance
                         }
                         
+                        // Markers
+                        ForEach(markers, id: \.self) { marker in
+                            let x = CGFloat(Double(marker.xValue)) * xScale
+                            Path { path in
+                                path.move(to: CGPoint(x: x, y: geometry.size.height / 2.0))
+                                path.addLine(to: CGPoint(x: geometry.size.width / 2.0, y: 0))
+                            }
+                            .stroke(.green, lineWidth: 2) // Customize the line appearance
+                        }
+
                         // X - axis
 
                         ForEach(Array(0..<totalPoints), id: \.self) { index in
-                        //ForEach(0..<totalPoints) { index in
                             if index < dataPoints.count {
                                 //let show:Bool = dataPoints.count < 2000 ? (index % 100 == 0) : (index % 1000 == 0)
-                                let show = dataPoints[index].idx % 1000 == 0
+                                let xValLabel = dataPoints[index].xValue + Int(offset)
+                                let show = xValLabel % 1000 == 0
                                 if show {
                                     let x = CGFloat(Double(index)) * xScale
                                     let y = geometry.size.height / 2.0 - CGFloat(dataPoints[index].val) * yScale
                                     //let point =
-                                    Text("\(dataPoints[index].idx)")
+                                    Text("\(xValLabel / 1000)")
                                         .position(x: CGFloat(index) * xScale, y: geometry.size.height * 0.47)
                                     //path.move(to: CGPoint(x: x, y: geometry.size.height / 2.0))
                                     //path.addLine(to: CGPoint(x: x, y: y))

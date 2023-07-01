@@ -4,7 +4,7 @@ import Foundation
 
 struct ContentView: View {
     @ObservedObject var audio = Audio()
-    let name = "Example 1_SkyPad" //GABCBAG_Sine"
+    let name = "Example 3_SkyPad" //GABCBAG_Sine"
     @State var offset:Double = 0.0 //8000.0
     @State var windowSizePercent:Double = 33.0
 
@@ -23,7 +23,7 @@ struct ContentView: View {
                     audio.analyse(name: name)
                     //audio.publish(offset: Int(offset), windowSize: windowSize)
                 }) {
-                    Text("Segment Audio File")
+                    Text("analyse Audio File")
                 }
                 Button(action: {
                     audio.publish(offset: Int(offset), windowSizePercent: windowSizePercent)
@@ -63,20 +63,21 @@ struct ContentView: View {
             
             if true {
                 ChartView(dataPoints: audio.segmentAveragesPublished,
-                          markers: audio.noteStartSegmentsPublished,
+                          markers: audio.markersPublished,
+                          offset: offset,
                           title: "Sample Averages"
                           //segmentOffset: getOffset()
                 )
                 .border(Color.indigo)
                 .padding(.horizontal)
             }
-            ChartView(dataPoints: audio.fourierTransformOutputPublished,
-                      markers: audio.noteStartSegmentsPublished,
-                      title: "Fourier"
-                      //segmentOffset: getOffset()
-            )
-            .border(Color.indigo)
-            .padding(.horizontal)
+//            ChartView(dataPoints: audio.fourierTransformOutputPublished,
+//                      markers: audio.noteStartSegmentsPublished,
+//                      title: "Fourier"
+//                      //segmentOffset: getOffset()
+//            )
+//            .border(Color.indigo)
+//            .padding(.horizontal)
 
         }
 //        .onAppear() {
