@@ -248,7 +248,7 @@ class Audio : ObservableObject {
                         //DO FFT on the note duration
                         let fftSegs:Int = Int(Double(segmentIdx - lastNoteSegmentIdx) / 3.0)
                         let noteSegments = Array(segmentAverages[segmentIdx...segmentIdx + fftSegs])
-                        self.performFourierTransform(inArray: noteSegments, publish: self.noteOffsets.count == 3)
+                        //self.performFourierTransform(inArray: noteSegments, publish: self.noteOffsets.count == 3)
                         
                         print ("    FFT segStart:", lastNoteSegmentIdx, "len:", noteSegments.count)
                     }
@@ -302,27 +302,29 @@ class Audio : ObservableObject {
         var adjust:Double?
         let correctNotes = getCorrectNotes(fileName: self.fileName)
         print("\n=== Correct === \(self.fileName)")
-        for correctNote in correctNotes()
+        var correctCtr = 0
+        for correctNote in correctNotes {
             if recordedIndex >= noteOffsets.count {
                 print("=============== Too few notes")
                 break
             }
-
+            
             let recordedNote = noteOffsets[recordedIndex]
             if recordedIndex == 0 {
                 let segs = recordedNote.duration()
                 adjust = segs / correctNote.getValue()
             }
-
+            
             let diff = recordedNote.duration() - correctNote.getValue()
             let adjDiff = diff / adjust!
-
+            
             let percentDiff = abs(adjDiff - correctNote.getValue()) / correctNote.getValue()
             let ok = percentDiff < 0.15
             print("  ctr:", correctCtr, "correctValue:", correctNote.getValue(),
                   "\t\tvalue:", str(adjDiff), "\t%:\(str(percentDiff))", "\t\tOK:", ok)
             recordedIndex += 1
             correctCtr += 1
+        }
     }
     
     func subArray(array:[Float], at:Int, fwd: Bool, len:Int) -> [Float] {
