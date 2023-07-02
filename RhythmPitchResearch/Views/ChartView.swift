@@ -15,19 +15,9 @@ struct ChartView: View {
         self.markers = markers
         self.offset = offset
         self.title = title
-        //self.segmentOffset = segmentOffset
         totalPoints = self.dataPoints.count
     }
     
-    func numPoints() -> Int {
-        //return windowSize < 100 ? 100 : Int(windowSize)
-        return dataPoints.count
-    }
-    
-    func getMax(_ array:[Float]) -> Float? {
-        return Float(array.max() ?? 0.0)
-    }
-     
     func maxy() -> Double {
         var max:Double = 0.0
         for p in dataPoints {
@@ -37,7 +27,35 @@ struct ChartView: View {
         }
         return max * 2.0
     }
+        
+    func minMaxX() -> (Int, Int) {
+        var max = 0
+        var min = Int.max
+        for p in self.dataPoints {
+            if p.xValue > max {
+                max = p.xValue
+            }
+            if p.xValue < min {
+                min = p.xValue
+            }
+        }
+        return (min, max)
+    }
     
+    func minMaxY() -> (Double, Double) {
+        var max = 0.0
+        var min = Double.infinity
+        for p in self.dataPoints {
+            if abs(p.val) > max {
+                max = abs(p.val)
+            }
+            if abs(p.val) < min {
+                min = abs(p.val)
+            }
+        }
+        return (min, max)
+    }
+
     func getColor(_ tag:Int) -> Color {
         if tag == 0 {
             return .blue
@@ -50,84 +68,68 @@ struct ChartView: View {
         }
         return .black
     }
-    
-    func getMax() -> Double {
-        var max = 0.0
-        for p in self.dataPoints {
-            if p.val > max {
-                max = p.val
-            }
-        }
-        return max
-    }
-    
+
     var body: some View {
         VStack {
-            //let l = log()
             if dataPoints.count > 0 {
                 HStack {
                     //let max = 0 //dataPoints.max()
-                    Text("\(self.title)  - points:\(dataPoints.count) max:\(getMax()) markerCount:\(markers.count)").padding()
+                    Text("\(self.title)  - points:\(dataPoints.count)  max:\(self.minMaxY().1)      markerCount:\(markers.count)").padding()
                 }
+
+
                 GeometryReader { geometry in
                     ZStack {
-                        let xScale = geometry.size.width / CGFloat(numPoints())
-                        let yScale = geometry.size.height / CGFloat(maxy())
+                        let (minX, maxX) = self.minMaxX()
+                        let xRange:Int = maxX - minX
+                        let xScale = geometry.size.width / Double(xRange)
+                        let yScale = geometry.size.height / (self.minMaxY().1 * 2.0)
                         
-                        ForEach(Array(0..<totalPoints), id: \.self) { index in
+                        ForEach(self.dataPoints, id: \.self) { point in
                             Path { path in
-                                if index < dataPoints.count {
-                                    let x = CGFloat(Double(index)) * xScale
-                                    let y = geometry.size.height / 2.0 - CGFloat(dataPoints[index].val) * yScale
-                                    if dataPoints[index].tag == 0 {
-                                        path.move(to: CGPoint(x: x, y: geometry.size.height / 2.0))
-                                        path.addLine(to: CGPoint(x: x, y: y))
-                                    }
-                                    else {
-                                        path.move(to: CGPoint(x: x, y: geometry.size.height / 2.0))
-                                        path.addLine(to: CGPoint(x: 0, y: 0))
-                                    }
-                                }
+                                let x = Double(point.xValue - minX) * xScale
+                                let y = point.val * yScale
+                                path.move   (to: CGPoint(x: x, y: geometry.size.height / 2.0 - y))
+                                path.addLine(to: CGPoint(x: x, y: geometry.size.height / 2.0))
                             }
-                            .stroke(getColor(dataPoints[index].tag), lineWidth: 2) // Customize the line appearance
+                            .stroke(getColor(point.tag), lineWidth: 2)
                         }
                         
                         // Markers
-                        ForEach(markers, id: \.self) { marker in
-                            let x = CGFloat(Double(marker.xValue)) * xScale
+                        ForEach(self.markers, id: \.self) { marker in
                             Path { path in
-                                path.move(to: CGPoint(x: x, y: geometry.size.height / 2.0))
-                                path.addLine(to: CGPoint(x: geometry.size.width / 2.0, y: 0))
+                                let x = Double(marker.xValue - minX) * xScale
+                                path.move   (to: CGPoint(x: x, y: geometry.size.height / 2.0))
+                                path.addLine(to: CGPoint(x: geometry.size.width / 2.0, y: 0.0))
                             }
-                            .stroke(.green, lineWidth: 2) // Customize the line appearance
+                            .stroke(getColor(marker.tag), lineWidth: 2)
                         }
 
-                        // X - axis
 
-                        ForEach(Array(0..<totalPoints), id: \.self) { index in
-                            if index < dataPoints.count {
-                                //let show:Bool = dataPoints.count < 2000 ? (index % 100 == 0) : (index % 1000 == 0)
-                                let xValLabel = dataPoints[index].xValue + Int(offset)
-                                let show = xValLabel % 1000 == 0
-                                if show {
-                                    let x = CGFloat(Double(index)) * xScale
-                                    let y = geometry.size.height / 2.0 - CGFloat(dataPoints[index].val) * yScale
-                                    //let point =
-                                    Text("\(xValLabel / 1000)")
-                                        .position(x: CGFloat(index) * xScale, y: geometry.size.height * 0.47)
-                                    //path.move(to: CGPoint(x: x, y: geometry.size.height / 2.0))
-                                    //path.addLine(to: CGPoint(x: x, y: y))
-                                }
+                        // X axis ticks
+                        
+                        let numXTicks = 10
+                        let tickLen = geometry.size.width / Double(numXTicks)
+                        let tickRange:Int = Int(Double(xRange) / Double(numXTicks))
+                        
+                        ForEach(Array(0..<numXTicks), id: \.self) { idx in
+                            let x = Double(idx) * tickLen
+                            let y = 5.0
+                            Path { path in
+                                path.move   (to: CGPoint(x: x, y: geometry.size.height / 2.0 - y))
+                                path.addLine(to: CGPoint(x: x, y: geometry.size.height / 2.0))
                             }
+                            .stroke(.black, lineWidth: 2)
+                            let xName = minX + (tickRange * idx)
+                            Text("\(xName)")
+                                .position(x: CGFloat(x), y: geometry.size.height / 2.0 + 10)
                         }
                     }
-
-            }
+                    
+                }
             }
         }
-//        .onAppear() {
-//            self.windowSize1 = Double(self.dataPoints.count)
-//        }
+        
     }
     
 }

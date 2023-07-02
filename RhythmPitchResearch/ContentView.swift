@@ -7,14 +7,19 @@ struct ContentView: View {
     let name = "Example 3_SkyPad" //GABCBAG_Sine"
     @State var offset:Double = 0.0 //8000.0
     @State var windowSizePercent:Double = 33.0
+    @State var magnifyPercent:Double = 10.0
+    var numberFormatter = NumberFormatter()
+    
 
-    func getOffset() -> Int {
-        return (Int(self.offset) / 1000) * 1000
+    func log() -> Int {
+        numberFormatter.numberStyle = .decimal
+        return 0
     }
     
     var body: some View {
         VStack {
-            Text("Test")
+            
+            let n = log()
             HStack {
                 Button(action: {
                     //                    audio.readFile(name: name)
@@ -26,7 +31,7 @@ struct ContentView: View {
                     Text("analyse Audio File")
                 }
                 Button(action: {
-                    audio.publish(offset: Int(offset), windowSizePercent: windowSizePercent)
+                    audio.publish(startOffset: Int(offset), magnifyPercent: magnifyPercent, windowSizePercent: windowSizePercent)
                 }) {
                     Text("Publish Audio")
                 }
@@ -53,9 +58,15 @@ struct ContentView: View {
             }
             
             HStack {
-                Text("Offset:\(String(format: "%.0f", self.offset))").padding()
-                Slider(value: self.$offset, in: 0.0...25000.0).padding()
-                Text("Window:\(String(format: "%.0f", self.windowSizePercent))%").padding()
+                let offStr:String = numberFormatter.string(from: NSNumber(value: Int(self.offset))) ?? ""
+                Text("Offset:\(offStr)").padding()
+                let max:Double = Double(audio.segmentAveragesCountPublished)
+                Slider(value: self.$offset, in: 0.0...max).padding()
+                
+                Text("Magnify %:\(String(format: "%.0f", self.magnifyPercent))").padding()
+                Slider(value: self.$magnifyPercent, in: 0.0...100.0).padding()
+                
+                Text("Window %:\(String(format: "%.0f", self.windowSizePercent))%").padding()
                 Slider(value: self.$windowSizePercent, in: 0.2...100.0).padding()
             }
             
@@ -70,6 +81,8 @@ struct ContentView: View {
                 )
                 .border(Color.indigo)
                 .padding(.horizontal)
+                
+                
             }
 //            ChartView(dataPoints: audio.fourierTransformOutputPublished,
 //                      markers: audio.noteStartSegmentsPublished,

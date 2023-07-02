@@ -14,11 +14,11 @@ class ValWithTag : Hashable {
         self.val = val
         self.tag = tag
     }
-    init(xValue:Int, val:Float, tag:Int) {
-        self.xValue = xValue
-        self.val = Double(val)
-        self.tag = tag
-    }
+//    init(xValue:Int, val:Float, tag:Int) {
+//        self.xValue = xValue
+//        self.val = Double(val)
+//        self.tag = tag
+//    }
 
     static func == (lhs: ValWithTag, rhs: ValWithTag) -> Bool {
         return lhs.xValue == rhs.xValue
@@ -52,6 +52,7 @@ class Audio : ObservableObject {
     var segmentAverages:[Float] = []
     var noteOffsets:[NoteOffset] = []
     
+    @Published var segmentAveragesCountPublished:Int = 0
     @Published var segmentAveragesPublished:[ValWithTag] = []
     @Published var markersPublished:[ValWithTag] = []
 
@@ -182,6 +183,10 @@ class Audio : ObservableObject {
               "\n  NumSegments:", numSegments,
               "\n  MS Per Segment:", str(milliSecondsPerSegment)
         )
+        
+        DispatchQueue.main.async {
+            self.segmentAveragesCountPublished = self.segmentAverages.count
+        }
     }
 
     //Find the note onsets by looking for amplitude bumps in slices of the segment averages
@@ -358,7 +363,7 @@ class Audio : ObservableObject {
         return res
     }
     
-    func publish(offset:Int, windowSizePercent:Double) {
+    func publish1(offset:Int, windowSizePercent:Double) {
         DispatchQueue.main.async {
             let startIdx = offset
             var pointsToPublish = Int(Double(self.segmentAverages.count) * windowSizePercent / 100.0)
@@ -376,7 +381,7 @@ class Audio : ObservableObject {
                 if idx < self.segmentAverages.count {
                     if idx % skip == 0 {
                         //self.segmentAveragesPublished.append(ValWithTag(i, self.segmentAverages[idx], 1))
-                        self.segmentAveragesPublished.append(ValWithTag(xValue:i - offset, val:self.segmentAverages[idx], tag: 0))
+                        //self.segmentAveragesPublished.append(ValWithTag(xValue:i - offset, val:self.segmentAverages[idx], tag: 0))
                         segCtr += 1
                     }
                 }
@@ -386,6 +391,30 @@ class Audio : ObservableObject {
                 }
             }
             print("START published ", self.segmentAveragesPublished.count, "markers:", self.markersPublished.count)
+        }
+    }
+    
+    func publish(startOffset:Int, magnifyPercent:Double, windowSizePercent:Double) {
+
+
+        DispatchQueue.main.async {
+            self.segmentAveragesPublished = []
+            self.markersPublished = []
+            
+            let startIndex = startOffset //Int(Double(self.segmentAverages.count) * offsetPercent / 100.0)
+            let endIndex = Int(Double(self.segmentAverages.count) * windowSizePercent / 100.0)
+            let mod = 100.0 / magnifyPercent
+            if endIndex > startIndex {
+                for i in startIndex..<endIndex {
+                    if i % Int(mod) == 0 {
+                        self.segmentAveragesPublished.append(ValWithTag(xValue:i, val: Double(self.segmentAverages[i]), tag: 0))
+                    }
+                }
+            }
+            for i in 0..<self.noteOffsets.count {
+                let note = self.noteOffsets[i]
+                self.markersPublished.append(ValWithTag(xValue: note.startSegment, val: 0, tag: note.aplitudeChangePercent > 10.0 ? 2 : 1))
+            }
         }
     }
     
