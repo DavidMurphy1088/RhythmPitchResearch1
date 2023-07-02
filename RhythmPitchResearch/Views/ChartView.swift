@@ -56,19 +56,35 @@ struct ChartView: View {
         return (min, max)
     }
 
-    func getColor(_ tag:Int) -> Color {
-        if tag == 0 {
+    func getColor(_ pointType:PointType) -> Color {
+        if pointType == PointType.segment {
             return .blue
         }
-        if tag == 1 {
+        if pointType == PointType.noteOffset {
             return .red
         }
-        if tag == 2 {
+        if pointType == PointType.correctNoteActual {
+            return .purple
+        }
+        if pointType == PointType.correctNoteSynched {
             return .green
+        }
+        if pointType == PointType.error {
+            return .orange
         }
         return .black
     }
-
+    
+    func getPointTypeOrigin(marker:ValWithTag, geo:GeometryProxy) -> CGPoint {
+        if marker.pointType == PointType.correctNoteActual {
+            return CGPoint(x: geo.size.width * 0.66, y: geo.size.height)
+        }
+        if marker.pointType == PointType.correctNoteSynched {
+            return CGPoint(x: geo.size.width * 0.50, y: geo.size.height)
+        }
+        return CGPoint(x: geo.size.width/2.0, y: 0.0)
+    }
+    
     var body: some View {
         VStack {
             if dataPoints.count > 0 {
@@ -92,7 +108,7 @@ struct ChartView: View {
                                 path.move   (to: CGPoint(x: x, y: geometry.size.height / 2.0 - y))
                                 path.addLine(to: CGPoint(x: x, y: geometry.size.height / 2.0))
                             }
-                            .stroke(getColor(point.tag), lineWidth: 2)
+                            .stroke(getColor(point.pointType), lineWidth: 2)
                         }
                         
                         // Markers
@@ -100,15 +116,14 @@ struct ChartView: View {
                             Path { path in
                                 let x = Double(marker.xValue - minX) * xScale
                                 path.move   (to: CGPoint(x: x, y: geometry.size.height / 2.0))
-                                path.addLine(to: CGPoint(x: geometry.size.width / 2.0, y: 0.0))
+                                path.addLine(to: getPointTypeOrigin(marker: marker, geo: geometry))
                             }
-                            .stroke(getColor(marker.tag), lineWidth: 2)
+                            .stroke(getColor(marker.pointType), lineWidth: 2)
                         }
-
 
                         // X axis ticks
                         
-                        let numXTicks = 10
+                        let numXTicks = 20
                         let tickLen = geometry.size.width / Double(numXTicks)
                         let tickRange:Int = Int(Double(xRange) / Double(numXTicks))
                         
@@ -122,7 +137,9 @@ struct ChartView: View {
                             .stroke(.black, lineWidth: 2)
                             let xName = minX + (tickRange * idx)
                             Text("\(xName)")
-                                .position(x: CGFloat(x), y: geometry.size.height / 2.0 + 10)
+                                .rotationEffect(Angle(degrees: -90))
+                                .position(x: CGFloat(x), y: geometry.size.height / 2.0 + 30)
+                                
                         }
                     }
                     

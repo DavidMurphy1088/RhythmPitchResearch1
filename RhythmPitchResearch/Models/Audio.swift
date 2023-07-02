@@ -3,16 +3,27 @@ import Foundation
 import AVFoundation
 import Accelerate
 
+enum PointType {
+    case segment
+    case noteOffset
+    //case noteOffsetSacn
+    case correctNoteActual
+    case correctNoteSynched
+    case error
+    case none
+}
+
 class ValWithTag : Hashable {
+    let id = UUID()
     var xValue:Int
     //var val:Float
     var val:Double
-    var tag:Int
+    var pointType:PointType
     
-    init(xValue:Int, val:Double, tag:Int) {
+    init(xValue:Int, val:Double, pointType:PointType) {
         self.xValue = xValue
         self.val = val
-        self.tag = tag
+        self.pointType = pointType
     }
 //    init(xValue:Int, val:Float, tag:Int) {
 //        self.xValue = xValue
@@ -21,12 +32,12 @@ class ValWithTag : Hashable {
 //    }
 
     static func == (lhs: ValWithTag, rhs: ValWithTag) -> Bool {
-        return lhs.xValue == rhs.xValue
+        return lhs.id == rhs.id
     }
 
     func hash(into hasher: inout Hasher) {
             hasher.combine(val)
-            hasher.combine(tag)
+            hasher.combine(pointType)
     }
 }
 
@@ -34,6 +45,7 @@ class NoteOffset {
     var startSegment:Int
     var endSegment:Int
     var aplitudeChangePercent:Double
+    var pointType:PointType = PointType.none
     
     init(startSegment:Int, endSegment:Int, amplitudeChangePercent:Double) {
         self.startSegment = startSegment
@@ -41,8 +53,8 @@ class NoteOffset {
         self.aplitudeChangePercent = amplitudeChangePercent
     }
     
-    func duration() -> Double {
-        return Double(endSegment - startSegment)
+    func durationSegments() -> Int {
+        return endSegment - startSegment
     }
 }
 
@@ -51,6 +63,7 @@ class Audio : ObservableObject {
     
     var segmentAverages:[Float] = []
     var noteOffsets:[NoteOffset] = []
+    var correctNoteOffsets:[NoteOffset] = []
     
     @Published var segmentAveragesCountPublished:Int = 0
     @Published var segmentAveragesPublished:[ValWithTag] = []
@@ -63,7 +76,8 @@ class Audio : ObservableObject {
     var fourierImaginaryPart:[Double] = []
     var splitComplex:DSPDoubleSplitComplex?
     @Published var fourierTransformOutputPublished:[ValWithTag] = []
-
+    var correctNotes:[Note] = []
+    
     //var milliSecondsPerSegment:Double = 0.0
     let numberFormatter = NumberFormatter()
     var segmentsPerSlice = 1
@@ -105,6 +119,8 @@ class Audio : ObservableObject {
     
     func readFile(name:String) {
         self.fileName = name
+        self.correctNotes = getCorrectNotes(fileName: self.fileName)
+
         numberFormatter.numberStyle = .decimal
         guard let url = Bundle.main.url(forResource: name, withExtension: "wav") else {
             print("File  not found in the app bundle.")
@@ -201,8 +217,9 @@ class Audio : ObservableObject {
         let shortestNote = 0.25 //shortest note value, how far to jump ahead after a note onset detected
         //let shortestNote = 0.05 //shortest note value, how far to jump ahead after a note onset detected
 
-        let amplitudeMinimumRequired:Float = 0.1 //What percenatge of the maximum is required to trigger note onset. Added to avoid phantom onsets before and after melody plays
-        
+        //let amplitudeMinimumRequired:Float = 0.1 //What percenatge of the maximum is required to trigger note onset. Added to avoid phantom onsets before and after melody plays
+        let amplitudeMinimumRequired:Float = 0.3
+
         //let amplitudeChangePercentThreshold = 1.5 //trigger note onset on this change in amplitude from previous segments slice
         //let amplitudeChangePercentThreshold = 0.60 //trigger note onset on this change in amplitude from previous segments slice
         //let amplitudeChangePercentThreshold = 0.20 //trigger note onset on this change in amplitude from previous segments slice
@@ -302,7 +319,104 @@ class Audio : ObservableObject {
                   "\tValue", str(value / first)
             )
         }
-        analyseCorrect(noteOffsets: noteOffsets)
+        alignToCorrect()
+        //analyseCorrect(noteOffsets: noteOffsets)
+    }
+    
+    func publish(startOffset:Int, magnifyPercent:Double, windowSizePercent:Double) {
+
+        DispatchQueue.main.async {
+            self.segmentAveragesPublished = []
+            self.markersPublished = []
+            
+            var startIndex = startOffset //Int(Double(self.segmentAverages.count) * offsetPercent / 100.0)
+            if self.noteOffsets.count > 0 { //}&& startOffset = 0.0 {
+                if startIndex < self.noteOffsets[0].startSegment {
+                    startIndex = self.noteOffsets[0].startSegment - 1000
+                }
+            }
+            
+            // segments
+            let endIndex = startIndex + Int(Double(self.segmentAverages.count) * windowSizePercent / 100.0)
+            let mod = 100.0 / magnifyPercent
+            if endIndex > startIndex {
+                for i in startIndex..<endIndex {
+                    if i % Int(mod) == 0 {
+                        if i < self.segmentAverages.count {
+                            self.segmentAveragesPublished.append(ValWithTag(xValue:i, val: Double(self.segmentAverages[i]), pointType: .segment))
+                        }
+                    }
+                }
+            }
+            
+            // note offsets
+            var firstOffset:NoteOffset?
+            for i in 0..<self.noteOffsets.count {
+                let note = self.noteOffsets[i]
+                self.markersPublished.append(ValWithTag(xValue: note.startSegment, val: 0,
+                                                        pointType: note.aplitudeChangePercent > 100.0 ? PointType.noteOffset : PointType.noteOffset))
+                if i==0 {
+                    firstOffset = note
+                }
+            }
+        
+            // correct notes
+            if false {
+                if let firstOffset = firstOffset {
+                    var correctSegment = firstOffset.startSegment
+                    for correctNote in self.correctNotes {
+                        self.markersPublished.append(ValWithTag(xValue: correctSegment, val: 0, pointType: PointType.correctNoteActual))
+                        let correctValue = correctNote.getValue()
+                        //print ("--->Correct:", correctNote.sequence, correctNote.midiNumber, correctNote.getValue(), correctNote.getNoteValueName())
+                        var len = Double(firstOffset.durationSegments()) * correctValue
+                        correctSegment += Int(len)
+                    }
+                }
+            }
+
+            // correct note offsets
+            for correctNote in self.correctNoteOffsets {
+                self.markersPublished.append(ValWithTag(xValue: correctNote.startSegment, val: 0, pointType: PointType.correctNoteSynched))
+            }
+        }
+    }
+
+    //Make a synched set of note offsets based on the correct note values
+    func alignToCorrect() {
+        self.correctNoteOffsets = []
+        var n = 0
+        var firstSegmentLength:Int = 0
+        var recordedIndex:Int = 0
+        var correctIndex:Int = 0
+        print("\nAlign to Correct ===============")
+        
+        for noteOffset in self.noteOffsets {
+            if n == 0 {
+                firstSegmentLength = Int(noteOffset.durationSegments())
+                correctNoteOffsets.append(NoteOffset(startSegment: noteOffset.startSegment, endSegment: noteOffset.endSegment, amplitudeChangePercent: 0))
+                recordedIndex = noteOffset.endSegment
+                correctIndex = noteOffset.endSegment
+                n = n+1
+                continue
+            }
+            let  diffSegments:Int = recordedIndex - correctIndex
+            let diffPercent:Double = abs(Double(diffSegments)) / Double(firstSegmentLength)
+            print("offset num:", n, "segment:", recordedIndex, "diff:", str(diffPercent))
+            
+            if diffPercent > 0.30 {
+                print("  error note midi:", correctNotes[n].midiNumber, "value:", correctNotes[n].getValue())
+                correctNoteOffsets.append(NoteOffset(startSegment: noteOffset.startSegment - diffSegments, endSegment: noteOffset.endSegment, amplitudeChangePercent: 0))
+                break
+            }
+            else {
+                correctNoteOffsets.append(NoteOffset(startSegment: noteOffset.startSegment, endSegment: noteOffset.endSegment, amplitudeChangePercent: 0))
+            }
+
+            correctIndex = recordedIndex + Int(self.correctNotes[n].getValue() * Double(firstSegmentLength))
+            recordedIndex += noteOffset.durationSegments()
+
+            n += 1
+        }
     }
     
     func analyseCorrect(noteOffsets:[NoteOffset]) {
@@ -311,7 +425,6 @@ class Audio : ObservableObject {
         let exampleData = ExampleData().getData(key: "Grade 1.Playing.\(exName)")
         var recordedIndex = 0
         var adjust:Double?
-        let correctNotes = getCorrectNotes(fileName: self.fileName)
         print("\n=== Correct === \(self.fileName)")
         var correctCtr = 0
         for correctNote in correctNotes {
@@ -323,11 +436,11 @@ class Audio : ObservableObject {
             let recordedNote = noteOffsets[recordedIndex]
             //adjust tempo based on first note recorded
             if recordedIndex == 0 {
-                let segs = recordedNote.duration()
+                let segs = Double(recordedNote.durationSegments())
                 adjust = segs / correctNote.getValue()
             }
             
-            let diff = recordedNote.duration() - correctNote.getValue()
+            let diff = Double(recordedNote.durationSegments()) - correctNote.getValue()
             let adjDiff = diff / adjust!
             
             let percentDiff = abs(adjDiff - correctNote.getValue()) / correctNote.getValue() * 100.0
@@ -363,67 +476,12 @@ class Audio : ObservableObject {
         return res
     }
     
-    func publish1(offset:Int, windowSizePercent:Double) {
-        DispatchQueue.main.async {
-            let startIdx = offset
-            var pointsToPublish = Int(Double(self.segmentAverages.count) * windowSizePercent / 100.0)
-            pointsToPublish = pointsToPublish - self.publishedCtr
-            self.publishedCtr += 1
-
-            self.segmentAveragesPublished = []
-            self.markersPublished = []
-
-            var segCtr = 0
-            let skip = 10
-            
-            for i in 0..<pointsToPublish {
-                let idx = offset + i
-                if idx < self.segmentAverages.count {
-                    if idx % skip == 0 {
-                        //self.segmentAveragesPublished.append(ValWithTag(i, self.segmentAverages[idx], 1))
-                        //self.segmentAveragesPublished.append(ValWithTag(xValue:i - offset, val:self.segmentAverages[idx], tag: 0))
-                        segCtr += 1
-                    }
-                }
-                if let marker = self.noteOffsets.first(where: { $0.startSegment == i }) {
-                    let val:Double = 0
-                    self.markersPublished.append(ValWithTag(xValue: (i - offset) / skip , val: val, tag: 1))
-                }
-            }
-            print("START published ", self.segmentAveragesPublished.count, "markers:", self.markersPublished.count)
-        }
-    }
-    
-    func publish(startOffset:Int, magnifyPercent:Double, windowSizePercent:Double) {
-
-
-        DispatchQueue.main.async {
-            self.segmentAveragesPublished = []
-            self.markersPublished = []
-            
-            let startIndex = startOffset //Int(Double(self.segmentAverages.count) * offsetPercent / 100.0)
-            let endIndex = Int(Double(self.segmentAverages.count) * windowSizePercent / 100.0)
-            let mod = 100.0 / magnifyPercent
-            if endIndex > startIndex {
-                for i in startIndex..<endIndex {
-                    if i % Int(mod) == 0 {
-                        self.segmentAveragesPublished.append(ValWithTag(xValue:i, val: Double(self.segmentAverages[i]), tag: 0))
-                    }
-                }
-            }
-            for i in 0..<self.noteOffsets.count {
-                let note = self.noteOffsets[i]
-                self.markersPublished.append(ValWithTag(xValue: note.startSegment, val: 0, tag: note.aplitudeChangePercent > 10.0 ? 2 : 1))
-            }
-        }
-    }
-    
     func publishFFT(offset:Int, windowSizePercent:Double) {
         //Fourier
         self.fourierTransformOutputPublished = []
         var ctr = 0
         for f in self.fourierTransformOutput {
-            self.fourierTransformOutputPublished.append(ValWithTag(xValue:ctr, val:f, tag: 0))
+            self.fourierTransformOutputPublished.append(ValWithTag(xValue:ctr, val:f, pointType: PointType.correctNoteActual))
             ctr += 1
         }
     }

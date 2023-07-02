@@ -4,7 +4,7 @@ import Foundation
 
 struct ContentView: View {
     @ObservedObject var audio = Audio()
-    let name = "Example 3_SkyPad" //GABCBAG_Sine"
+    let name = "Example 2_SkyPad" //GABCBAG_Sine"
     @State var offset:Double = 0.0 //8000.0
     @State var windowSizePercent:Double = 33.0
     @State var magnifyPercent:Double = 10.0
@@ -58,6 +58,9 @@ struct ContentView: View {
             }
             
             HStack {
+                Text("Window %:\(String(format: "%.0f", self.windowSizePercent))%").padding()
+                Slider(value: self.$windowSizePercent, in: 0.2...100.0).padding()
+
                 let offStr:String = numberFormatter.string(from: NSNumber(value: Int(self.offset))) ?? ""
                 Text("Offset:\(offStr)").padding()
                 let max:Double = Double(audio.segmentAveragesCountPublished)
@@ -66,8 +69,6 @@ struct ContentView: View {
                 Text("Magnify %:\(String(format: "%.0f", self.magnifyPercent))").padding()
                 Slider(value: self.$magnifyPercent, in: 0.0...100.0).padding()
                 
-                Text("Window %:\(String(format: "%.0f", self.windowSizePercent))%").padding()
-                Slider(value: self.$windowSizePercent, in: 0.2...100.0).padding()
             }
             
             .padding()
