@@ -2,7 +2,7 @@ import SwiftUI
 import CoreData
 import Foundation
 
-struct ContentView: View {
+struct ContentViewAnalyse: View {
     @ObservedObject var audio = Audio()
     let name = "Example 2_SkyPad" //GABCBAG_Sine"
     @State var offset:Double = 0.0 //8000.0
@@ -28,12 +28,18 @@ struct ContentView: View {
                     audio.analyse(name: name)
                     //audio.publish(offset: Int(offset), windowSize: windowSize)
                 }) {
-                    Text("analyse Audio File")
+                    Text("Analyse Audio File")
                 }
                 Button(action: {
                     audio.publish(startOffset: Int(offset), magnifyPercent: magnifyPercent, windowSizePercent: windowSizePercent)
                 }) {
-                    Text("Publish Audio")
+                    Text("Publish Audio Analyis")
+                }
+                
+                Button(action: {
+                    StackOverflow().testFFT()
+                }) {
+                    Text("StackOverflow FFT")
                 }
 
                 Button(action: {

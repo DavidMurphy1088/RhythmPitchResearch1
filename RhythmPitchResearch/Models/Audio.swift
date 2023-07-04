@@ -214,6 +214,7 @@ class Audio : ObservableObject {
         self.segmentsPerSlice = 100 //100 // how many segments per slice either side of analysis point
         //self.segmentsPerSlice = 300 // how many segments per slice either side of analysis point
         let segmentAdvance = 0.25 // how many segments to move the analysis point forward each iteration
+        
         let shortestNote = 0.25 //shortest note value, how far to jump ahead after a note onset detected
         //let shortestNote = 0.05 //shortest note value, how far to jump ahead after a note onset detected
 
@@ -226,14 +227,12 @@ class Audio : ObservableObject {
         //let amplitudeChangePercentThreshold = 0.10 //trigger note onset on this change in amplitude from previous segments slice
         let amplitudeChangePercentThreshold = 0.20 //trigger note onset on this change in amplitude from previous segments slice
 
-        let lookAheadMS = 50 //UNUSED - How many millisec to lookahead to confirm presence of note (or is amplitude change just a bump)
+        //let lookAheadMS = 50 //UNUSED - How many millisec to lookahead to confirm presence of note (or is amplitude change just a bump)
         let amplitudeChangeThreshold:Float = 2.0 //UNUSED - How amplitude must change based on the max amplitude in the file
         //let amplitudeChangeThreshold = maxAmplitude * 0.02
         //let amplitudeChangeThreshold = maxAmplitude * 0.25
         
         // ================ Questions ============
-        //is first segmet of note onset too early
-        //why use max amplitude to set threshold - use % increase from last segment
         
         let maxAmplitude:Float = self.segmentAverages.max() ?? 0
         //let amplitudeChangeThresholdValue = maxAmplitude * amplitudeChangeThreshold
