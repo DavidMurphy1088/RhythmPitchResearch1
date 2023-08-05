@@ -17,7 +17,7 @@ struct ContentViewSpectogram: View {
             HStack {
                 VStack {
                     Button(action: {
-                        audioSpectrogram.readFile()
+                        audioSpectrogram.analyzeFile()
                     }) {
                         Text("Test Read WAV File")
                     }
@@ -36,24 +36,31 @@ struct ContentViewSpectogram: View {
                     
                     Text("Speed")
                         .onChange(of: audioSpectrogram.speed) { newValue in
-                            print("Spee Change: \(Int(newValue))")
+                            print("Speed Change: \(Int(newValue))")
                         }
                     Slider(value: $audioSpectrogram.speed,
                            in: 1.0 ... 16.0)
                     
                 }
-                
-                Text("Gain")
-                Slider(value: $audioSpectrogram.gain,
-                       in: 0.01 ... 0.04)
-
-                Divider().frame(height: 40)
-                
-                Text("Zero Ref")
-                Slider(value: $audioSpectrogram.zeroReference,
-                       in: 10 ... 2500)
-                
-                Divider().frame(height: 40)
+                HStack {
+                    Text("SamplesPerFrame")
+                    Slider(value: $audioSpectrogram.samplesPerFrame,
+                           in: 100 ... 4096)
+                    
+                    Divider().frame(height: 40)
+                    
+                    Text("Gain")
+                    Slider(value: $audioSpectrogram.gain,
+                           in: 0.01 ... 0.04)
+                    
+                    Divider().frame(height: 40)
+                    
+                    Text("Zero Ref")
+                    Slider(value: $audioSpectrogram.zeroReference,
+                           in: 10 ... 2500)
+                    
+                    Divider().frame(height: 40)
+                }
                 
                 Picker("Mode", selection: $audioSpectrogram.mode) {
                     ForEach(AudioSpectrogram.Mode.allCases) { mode in

@@ -16,7 +16,7 @@
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "12"
             endingLineNumber = "12"
-            landmarkName = "test()"
+            landmarkName = "testFFT()"
             landmarkType = "7">
             <Locations>
                <Location
@@ -79,7 +79,7 @@
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "23"
             endingLineNumber = "23"
-            landmarkName = "test()"
+            landmarkName = "testFFT()"
             landmarkType = "7">
             <Locations>
                <Location
@@ -142,7 +142,7 @@
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "20"
             endingLineNumber = "20"
-            landmarkName = "test()"
+            landmarkName = "testFFT()"
             landmarkType = "7">
             <Locations>
                <Location
@@ -205,7 +205,7 @@
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "29"
             endingLineNumber = "29"
-            landmarkName = "test()"
+            landmarkName = "testFFT()"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
@@ -255,6 +255,179 @@
                   offsetFromSymbolStart = "148">
                </Location>
             </Locations>
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "148A7081-A08C-4E91-89B4-9E14CCDB04E7"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "RhythmPitchResearch/Models/AudioSpectrogram/AudioSpectrogram.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "417"
+            endingLineNumber = "417"
+            landmarkName = "analyzeFile()"
+            landmarkType = "7">
+            <Locations>
+               <Location
+                  uuid = "148A7081-A08C-4E91-89B4-9E14CCDB04E7 - e35075ddb97fb001"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "RhythmPitchResearch.AudioSpectrogram.analyzeFile() -&gt; ()"
+                  moduleName = "RhythmPitchResearch"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/davidm/Projects/RhythmPitchResearch/RhythmPitchResearch/Models/AudioSpectrogram/AudioSpectrogram.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "353"
+                  endingLineNumber = "353"
+                  offsetFromSymbolStart = "3555">
+               </Location>
+               <Location
+                  uuid = "148A7081-A08C-4E91-89B4-9E14CCDB04E7 - e35075ddb97fb001"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "RhythmPitchResearch.AudioSpectrogram.analyzeFile() -&gt; ()"
+                  moduleName = "RhythmPitchResearch"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/davidm/Projects/RhythmPitchResearch/RhythmPitchResearch/Models/AudioSpectrogram/AudioSpectrogram.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "353"
+                  endingLineNumber = "353"
+                  offsetFromSymbolStart = "2861">
+               </Location>
+            </Locations>
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "188D7CF6-095A-402C-AE90-33FD3B4039D0"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "RhythmPitchResearch/Models/AudioSpectrogram/AudioSpectrogram.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "162"
+            endingLineNumber = "162"
+            landmarkName = "processData(values16:valuesFloat:)"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "CEFF385E-B937-41C7-808C-4D9949ACA730"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "RhythmPitchResearch/Models/AudioSpectrogram/AudioSpectrogram.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "200"
+            endingLineNumber = "200"
+            landmarkName = "processData(values16:valuesFloat:)"
+            landmarkType = "7">
+            <Locations>
+               <Location
+                  uuid = "CEFF385E-B937-41C7-808C-4D9949ACA730 - 8c44c2e8440b502a"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "RhythmPitchResearch.AudioSpectrogram.processData(values16: Swift.Optional&lt;Swift.Array&lt;Swift.Int16&gt;&gt;, valuesFloat: Swift.Optional&lt;Swift.Array&lt;Swift.Float&gt;&gt;) -&gt; ()"
+                  moduleName = "RhythmPitchResearch"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/davidm/Projects/RhythmPitchResearch/RhythmPitchResearch/Models/AudioSpectrogram/AudioSpectrogram.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "178"
+                  endingLineNumber = "178"
+                  offsetFromSymbolStart = "1266">
+               </Location>
+               <Location
+                  uuid = "CEFF385E-B937-41C7-808C-4D9949ACA730 - 8c44c2e8440b502a"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "RhythmPitchResearch.AudioSpectrogram.processData(values16: Swift.Optional&lt;Swift.Array&lt;Swift.Int16&gt;&gt;, valuesFloat: Swift.Optional&lt;Swift.Array&lt;Swift.Float&gt;&gt;) -&gt; ()"
+                  moduleName = "RhythmPitchResearch"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/davidm/Projects/RhythmPitchResearch/RhythmPitchResearch/Models/AudioSpectrogram/AudioSpectrogram.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "178"
+                  endingLineNumber = "178"
+                  offsetFromSymbolStart = "1687">
+               </Location>
+               <Location
+                  uuid = "CEFF385E-B937-41C7-808C-4D9949ACA730 - 8c44c2e8440b502a"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "RhythmPitchResearch.AudioSpectrogram.processData(values16: Swift.Optional&lt;Swift.Array&lt;Swift.Int16&gt;&gt;, valuesFloat: Swift.Optional&lt;Swift.Array&lt;Swift.Float&gt;&gt;) -&gt; ()"
+                  moduleName = "RhythmPitchResearch"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/davidm/Projects/RhythmPitchResearch/RhythmPitchResearch/Models/AudioSpectrogram/AudioSpectrogram.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "178"
+                  endingLineNumber = "178"
+                  offsetFromSymbolStart = "1358">
+               </Location>
+               <Location
+                  uuid = "CEFF385E-B937-41C7-808C-4D9949ACA730 - 8c44c2e8440b56df"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "RhythmPitchResearch.AudioSpectrogram.processData(values16: Swift.Optional&lt;Swift.Array&lt;Swift.Int16&gt;&gt;, valuesFloat: Swift.Optional&lt;Swift.Array&lt;Swift.Float&gt;&gt;) -&gt; ()"
+                  moduleName = "RhythmPitchResearch"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/davidm/Projects/RhythmPitchResearch/RhythmPitchResearch/Models/AudioSpectrogram/AudioSpectrogram.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "197"
+                  endingLineNumber = "197"
+                  offsetFromSymbolStart = "3019">
+               </Location>
+               <Location
+                  uuid = "CEFF385E-B937-41C7-808C-4D9949ACA730 - 8c44c2e8440b56df"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "RhythmPitchResearch.AudioSpectrogram.processData(values16: Swift.Optional&lt;Swift.Array&lt;Swift.Int16&gt;&gt;, valuesFloat: Swift.Optional&lt;Swift.Array&lt;Swift.Float&gt;&gt;) -&gt; ()"
+                  moduleName = "RhythmPitchResearch"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/davidm/Projects/RhythmPitchResearch/RhythmPitchResearch/Models/AudioSpectrogram/AudioSpectrogram.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "197"
+                  endingLineNumber = "197"
+                  offsetFromSymbolStart = "3117">
+               </Location>
+            </Locations>
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "9BE50C94-D619-499F-9AB9-29085857B415"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "RhythmPitchResearch/Models/AudioSpectrogram/AudioSpectrogram.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "239"
+            endingLineNumber = "239"
+            landmarkName = "processData(values16:valuesFloat:)"
+            landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
    </Breakpoints>

@@ -8,7 +8,7 @@ class StackOverflow {
     func testFFT() {
         do {
             //let fileURL = Bundle.main.url(forResource: "Example 1_SkyPad", withExtension: "mp3")!
-            let fileURL = Bundle.main.url(forResource: "Example 1_SkyPad", withExtension: "wav")!
+            let fileURL = Bundle.main.url(forResource: "Example 2_SkyPad", withExtension: "wav")!
             let audioFile = try!  AVAudioFile(forReading: fileURL as URL)
             let frameCount = UInt32(audioFile.length)
             

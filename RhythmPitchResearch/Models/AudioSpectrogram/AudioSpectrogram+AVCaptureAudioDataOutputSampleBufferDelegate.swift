@@ -10,6 +10,7 @@ import AVFoundation
 // MARK: AVCaptureAudioDataOutputSampleBufferDelegate and AVFoundation Support
 
 extension AudioSpectrogram: AVCaptureAudioDataOutputSampleBufferDelegate {
+    
     public func captureOutput(_ output: AVCaptureOutput,
                               didOutput sampleBuffer: CMSampleBuffer,
                               from connection: AVCaptureConnection) {
@@ -52,7 +53,7 @@ extension AudioSpectrogram: AVCaptureAudioDataOutputSampleBufferDelegate {
         /// 1024 samples, the app adds the contents of each audio sample buffer to `rawAudioData`.
         ///
         /// The following code creates an array from `data` and appends it to  `rawAudioData`:
-        if self.rawAudioData.count < AudioSpectrogram.sampleCount * 2 {
+        if self.rawAudioData.count < AudioSpectrogram.samplesPerFrame * 2 {
             let actualSampleCount = CMSampleBufferGetNumSamples(sampleBuffer)
             
             let pointer = data.bindMemory(to: Int16.self,
@@ -69,8 +70,8 @@ extension AudioSpectrogram: AVCaptureAudioDataOutputSampleBufferDelegate {
         ///
         /// By removing fewer elements than each step processes, the rendered frames of data overlap,
         /// ensuring no loss of audio data.
-        while self.rawAudioData.count >= AudioSpectrogram.sampleCount {
-            let dataToProcess = Array(self.rawAudioData[0 ..< AudioSpectrogram.sampleCount])
+        while self.rawAudioData.count >= AudioSpectrogram.samplesPerFrame {
+            let dataToProcess = Array(self.rawAudioData[0 ..< AudioSpectrogram.samplesPerFrame])
             self.rawAudioData.removeFirst(AudioSpectrogram.hopCount)
             
 //            if false && ctr1 % 200 == 0 {

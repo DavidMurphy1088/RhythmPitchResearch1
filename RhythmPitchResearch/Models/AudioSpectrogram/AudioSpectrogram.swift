@@ -10,14 +10,14 @@ import Combine
 import AVFoundation
 
 class AudioSpectrogram: NSObject, ObservableObject {
-    //var ctr1 = 0
     var captureOutputCtr = 0
     var processCtr = 0
+    
     /// An enumeration that specifies the drum loop provider's mode.
     enum Mode: String, CaseIterable, Identifiable {
         case linear
         case mel
-        
+
         var id: Self { self }
     }
     
@@ -26,16 +26,19 @@ class AudioSpectrogram: NSObject, ObservableObject {
 
     //@Published var gain: Double = 0.025
     @Published var gain: Double = 0.035
-    
     @Published var speed: Double = 1000.0
     @Published var zeroReference: Double = 1000
-    
+    @Published var samplesPerFrame = 1024.0
+
     @Published var outputImage = AudioSpectrogram.emptyCGImage
-    
+
+    var numberFormatter = NumberFormatter()
+
     // MARK: Initialization
     
     override init() {
         super.init()
+        numberFormatter.numberStyle = .decimal
         configureCaptureSession()
         audioOutput.setSampleBufferDelegate(self,queue: captureQueue)
     }
@@ -46,10 +49,11 @@ class AudioSpectrogram: NSObject, ObservableObject {
     
     // MARK: Properties
     
-    lazy var melSpectrogram = MelSpectrogram(sampleCount: AudioSpectrogram.sampleCount)
+    lazy var melSpectrogram = MelSpectrogram(sampleCount: Int(samplesPerFrame))
+    
+    var sampleRate:Double = 0.0
     
     /// The number of samples per frame — the height of the spectrogram.
-    static let sampleCount = 1024
     
     /// The number of displayed buffers — the width of the spectrogram.
     static let spectogramWidth = 768
@@ -67,13 +71,13 @@ class AudioSpectrogram: NSObject, ObservableObject {
                                      attributes: [],
                                      autoreleaseFrequency: .workItem)
     
-    let forwardDCT = vDSP.DCT(count: sampleCount,
+    let forwardDCT = vDSP.DCT(count: Int(samplesPerFrame),
                               transformType: .II)!
     
     /// The window sequence for reducing spectral leakage.
     let hanningWindow = vDSP.window(ofType: Float.self,
                                     usingSequence: .hanningDenormalized,
-                                    count: sampleCount,
+                                    count: Int(samplesPerFrame),
                                     isHalfWindow: false)
     
     let dispatchSemaphore = DispatchSemaphore(value: 1)
@@ -88,8 +92,8 @@ class AudioSpectrogram: NSObject, ObservableObject {
     var rawAudioData = [Int16]()
     
     /// Raw frequency-domain values.
-    var frequencyDomainValues = [Float](repeating: 0,
-                                        count: spectogramWidth * sampleCount)
+    var frequencyDomainValuesForImage = [Float](repeating: 0,
+                                        count: spectogramWidth * samplesPerFrame)
         
     var rgbImageFormat = vImage_CGImageFormat(
         bitsPerComponent: 32,
@@ -103,48 +107,48 @@ class AudioSpectrogram: NSObject, ObservableObject {
     /// RGB vImage buffer that contains a vertical representation of the audio spectrogram.
     
     let redBuffer = vImage.PixelBuffer<vImage.PlanarF>(
-            width: AudioSpectrogram.sampleCount,
+            width: AudioSpectrogram.samplesPerFrame,
             height: AudioSpectrogram.spectogramWidth)
 
     let greenBuffer = vImage.PixelBuffer<vImage.PlanarF>(
-            width: AudioSpectrogram.sampleCount,
+            width: AudioSpectrogram.samplesPerFrame,
             height: AudioSpectrogram.spectogramWidth)
     
     let blueBuffer = vImage.PixelBuffer<vImage.PlanarF>(
-            width: AudioSpectrogram.sampleCount,
+            width: AudioSpectrogram.samplesPerFrame,
             height: AudioSpectrogram.spectogramWidth)
     
     let rgbImageBuffer = vImage.PixelBuffer<vImage.InterleavedFx3>(
-        width: AudioSpectrogram.sampleCount,
+        width: AudioSpectrogram.samplesPerFrame,
         height: AudioSpectrogram.spectogramWidth)
 
 
     /// A reusable array that contains the current frame of time-domain audio data as single-precision
     /// values.
     var timeDomainBuffer = [Float](repeating: 0,
-                                   count: sampleCount)
+                                   count: samplesPerFrame)
     
     /// A resuable array that contains the frequency-domain representation of the current frame of
     /// audio data.
-    var frequencyDomainBuffer = [Float](repeating: 0,
-                                        count: sampleCount)
+    var frequencyDomainValues = [Float](repeating: 0, count: samplesPerFrame)
     
     // MARK: Instance Methods
         
-    func showData(ctx:String, values: [Float]) {
+    func showData(ctx:String, idx: Int, values: [Float]) {
         let sum = values.reduce(0, +)
         let average = sum / Float(values.count)
         let maxVal = values.max()
         let indexOfMax = values.firstIndex(of: maxVal ?? 0)
         
-        print("showData ctx:", ctx, "count:", values.count,
-              "\tmin:", str(values.min()),
-              "\tmax:", str(maxVal),
-              "\tavg:", str(average),
-              "\tindexOfMax", indexOfMax
-        )
+        print("Idx:\(idx) Data-Ctx:\(ctx) \tCount:\(str(values.count)) \tMax:\(str(maxVal))", terminator: "")
+//              "\tmin:", str(values.min()),
+//              "\tmax:", str(maxVal),
+//              "\tavg:", str(average),
+//              "\tindexOfMax", indexOfMax
+//        )
         
     }
+    
     /// Process a frame of raw audio data.
     ///
     /// * Convert supplied `Int16` values to single-precision and write the result to `timeDomainBuffer`.
@@ -153,6 +157,7 @@ class AudioSpectrogram: NSObject, ObservableObject {
     /// * Convert frequency-domain values in `frequencyDomainBuffer` to decibels and scale by the
     ///     `gain` value.
     /// * Append the values in `frequencyDomainBuffer` to `frequencyDomainValues`.
+    
     func processData(values16: [Int16]?, valuesFloat:[Float]? = nil) {
         if let values16 = values16 {
             vDSP.convertElements(of: values16,
@@ -166,63 +171,120 @@ class AudioSpectrogram: NSObject, ObservableObject {
                       hanningWindow,
                       result: &timeDomainBuffer)
         
-        forwardDCT.transform(timeDomainBuffer,
-                             result: &frequencyDomainBuffer)
+        ///A class that provides single-precision discrete cosine transform.
+        ///The output of the DCT is a set of numbers. Each number in the output represents the weight, or amplitude, of a certain frequency in the input data.
         
-        vDSP.absolute(frequencyDomainBuffer,
-                      result: &frequencyDomainBuffer)
+        //var frequencyDomainValuesTemp = [Float](repeating: 0, count: AudioSpectrogram.samplesPerFrame)
+
+        forwardDCT.transform(timeDomainBuffer,
+                             result: &frequencyDomainValues
+                             //result: &frequencyDomainValuesTemp
+        )
+        
+//        //filter out other frequencies
+//        let lowFrequency = 200.0
+//        let highFrequency = 800.0
+//        let lowIndex = Int(lowFrequency * Double(frequencyDomainValues.count) / sampleRate)
+//        let highIndex = Int(highFrequency * Double(frequencyDomainValues.count) / sampleRate)
+//        frequencyDomainValues = [Float](repeating: 0, count: highIndex - lowIndex)
+//        //frequencyDomainValues = frequencyDomainValuesTemp[lowIndex...highIndex]
+//        var j = 0
+//        for i in lowIndex..<highIndex {
+//            frequencyDomainValues[j] = frequencyDomainValuesTemp[i]
+//            j += 1
+//        }
+        
+        //print(timeDomainBuffer.count, frequencyDomainBuffer.count)
+        
+        /// Populates `result` with the absolute values of `vector`,
+        vDSP.absolute(frequencyDomainValues, result: &frequencyDomainValues)
         
         switch mode {
             case .linear:
-                vDSP.convert(amplitude: frequencyDomainBuffer,
-                             toDecibels: &frequencyDomainBuffer,
+                /// Converts power to decibels, single-precision.
+                vDSP.convert(amplitude: frequencyDomainValues,
+                             toDecibels: &frequencyDomainValues,
                              zeroReference: Float(zeroReference))
             case .mel:
-                melSpectrogram.computeMelSpectrogram(
-                    values: &frequencyDomainBuffer)
-                
-                vDSP.convert(power: frequencyDomainBuffer,
-                             toDecibels: &frequencyDomainBuffer,
+                melSpectrogram.computeMelSpectrogram(values: &frequencyDomainValues)
+
+                /// Converts power to decibels, single-precision.
+                vDSP.convert(power: frequencyDomainValues,
+                             toDecibels: &frequencyDomainValues,
                              zeroReference: Float(zeroReference))
         }
 
         vDSP.multiply(Float(gain),
-                      frequencyDomainBuffer,
-                      result: &frequencyDomainBuffer)
+                      frequencyDomainValues,
+                      result: &frequencyDomainValues)
         
-        if frequencyDomainValues.count > AudioSpectrogram.sampleCount {
-            frequencyDomainValues.removeFirst(AudioSpectrogram.sampleCount)
+        if frequencyDomainValuesForImage.count > AudioSpectrogram.samplesPerFrame {
+            frequencyDomainValuesForImage.removeFirst(AudioSpectrogram.samplesPerFrame)
         }
         
-        if false {
-            for i in 0..<frequencyDomainValues.count {
-                if i > Int(frequencyDomainValues.count / 2)  {
-                    frequencyDomainValues[i] = 100.0
+        ///frequencyDomainBuffer - A resuable array that contains the frequency-domain representation of the current frame of audio data.
+        ///frequencyDomainValues - Raw frequency-domain values.
+        frequencyDomainValuesForImage.append(contentsOf: frequencyDomainValues)
+        
+        var firstAboveZeroIndex:Int?
+        for i in stride(from: frequencyDomainValues.count - 1, through: 0, by: -1) {
+            if frequencyDomainValues[i] > 0 {
+                firstAboveZeroIndex = i
+                break
+            }
+        }
+        var topAvg:Double? = nil
+        if let firstAboveZeroIndex = firstAboveZeroIndex {
+            let sliceSize = Int(Double(frequencyDomainValues.count) * 0.1 * 0.2)
+            var total = 0.0
+            for i in 0..<sliceSize {
+                total += Double(frequencyDomainValues[firstAboveZeroIndex - i])
+            }
+            topAvg = total / Double(sliceSize)
+        }
+
+        showData(ctx: "Time", idx: processCtr, values: timeDomainBuffer)
+        print("\t", terminator: " ")
+        //showData(ctx: "Freq", idx: processCtr, values: frequencyDomainValues)
+        //if let topAvg = topAvg {
+            //print("\tFirstAbove:", firstAboveZeroIndex ?? "",terminator: "")
+            print("\tFirstAboveAvg:", str(topAvg), terminator: "")
+        //}
+        print()
+//        if processCtr == 230 {
+//            print("\n")
+//            for f in 0..<frequencyDomainValues.count {
+//                print(str(frequencyDomainValues[f]))
+//            }
+//            print("\n")
+//        }
+        processCtr += 1
+    }
+    
+    func findPeaks(in buffer: [Float]) -> [Int] {
+        var peaks = [Int]()
+        for i in 1..<buffer.count-1 {
+            if buffer[i] > buffer[i-1] && buffer[i] > buffer[i+1] {
+///                Converting to decibels involves taking the logarithm of the amplitude or power. If the amplitude or power is less than 1, its logarithm will be negative.
+///                In the context of audio signal processing, a value in decibels is negative if it is less than the reference value. The reference value is typically the maximum possible
+///                amplitude or power. Therefore, a negative decibel value simply means that the corresponding frequency component has less amplitude or power than the reference.
+                if buffer[i] > 0 {
+                    peaks.append(i)
                 }
             }
         }
-
-        ///frequencyDomainBuffer - A resuable array that contains the frequency-domain representation of the current frame of audio data.
-        ///frequencyDomainValues - Raw frequency-domain values.
-        frequencyDomainValues.append(contentsOf: frequencyDomainBuffer)
-        
-        if processCtr % 100 == 0 {
-            showData(ctx: "processData \(processCtr)", values: timeDomainBuffer)
-            showData(ctx: "  Freq \(processCtr)", values: frequencyDomainValues)
-            print()
-        }
-        processCtr += 1
+        return peaks
     }
     
     /// Creates an audio spectrogram `CGImage` from `frequencyDomainValues`.
     func makeAudioSpectrogramImage() -> CGImage {
-        frequencyDomainValues.withUnsafeMutableBufferPointer {
+        frequencyDomainValuesForImage.withUnsafeMutableBufferPointer {
             
             let planarImageBuffer = vImage.PixelBuffer(
                 data: $0.baseAddress!,
-                width: AudioSpectrogram.sampleCount,
+                width: AudioSpectrogram.samplesPerFrame,
                 height: AudioSpectrogram.spectogramWidth,
-                byteCountPerRow: AudioSpectrogram.sampleCount * MemoryLayout<Float>.stride,
+                byteCountPerRow: AudioSpectrogram.samplesPerFrame * MemoryLayout<Float>.stride,
                 pixelFormat: vImage.PlanarF.self)
             
             AudioSpectrogram.multidimensionalLookupTable.apply(
@@ -321,10 +383,10 @@ extension AudioSpectrogram {
         return buffer.makeCGImage(cgImageFormat: fmt!)!
     }()
     
-    func readFile() {
-        let name = "Example 1_SkyPad"
+    func analyzeFile() {
+        //let name = "Example 2_SkyPad"
+        let name = "C_Octave_To_C_Piano_And_Down" //C_Octave_To_C_Piano"
 
-        //numberFormatter.numberStyle = .decimal
         guard let url = Bundle.main.url(forResource: name, withExtension: "wav") else {
             print("File  not found in the app bundle.")
             return
@@ -332,63 +394,76 @@ extension AudioSpectrogram {
         do {
             let audioFile = try AVAudioFile(forReading: url)
             let durationSeconds = Double(audioFile.length) / audioFile.fileFormat.sampleRate
-            let frames = AVAudioFrameCount(audioFile.length)
+            sampleRate = audioFile.fileFormat.sampleRate
+            let totalSamples = AVAudioFrameCount(audioFile.length)
             let buffer = AVAudioPCMBuffer(pcmFormat: audioFile.processingFormat,
-                                                  frameCapacity: AVAudioFrameCount(audioFile.length))
+                                          frameCapacity: AVAudioFrameCount(audioFile.length))
             guard buffer != nil else {
                 return
             }
             try audioFile.read(into: buffer!)
 
-            let channelIndex = 0 // Specify the index of the desired channel
-            let segmentLength = 1024
-            
+            let channelIndex = 0 /// Specify the index of the desired channel
+            //let frameLength = 1024 ///A short slice of a time series used for analysis purposes. This usually corresponds to a single column of a spectrogram matrix.
+            //let frameLength = 2048///A short slice of a time series used for analysis purposes. This usually corresponds to a single column of a spectrogram matrix.
+
             let floatChannelData = buffer?.floatChannelData!
             let channelData = floatChannelData![channelIndex]
             
             let totalSampleCount = buffer!.frameLength
-            let segmentCount = Int(totalSampleCount) / segmentLength
+            let frameCount = Int(totalSampleCount) / AudioSpectrogram.samplesPerFrame
+            let frameDuration = durationSeconds / Double(frameCount)
             
-            var segments: [[Float]] = []
+            var frames: [[Float]] = []
             
-            for segmentIndex in 0..<segmentCount {
+            for segmentIndex in 0..<frameCount {
                 //TODO shoudl overlap segments into processing
-                let startSample = segmentIndex * segmentLength
-                let endSample = startSample + segmentLength
-                
-                var segment: [Float] = []
-                
+                let startSample = segmentIndex * AudioSpectrogram.samplesPerFrame
+                let endSample = startSample + AudioSpectrogram.samplesPerFrame
+                var frame: [Float] = []
                 for sampleIndex in startSample..<endSample {
                     let sample = channelData[Int(sampleIndex)]
-                    segment.append(sample)
+                    frame.append(sample)
                 }
-                segments.append(segment)
-            }
-            print("readFile", name,
-                  "\n  duration secs:", str(durationSeconds),
-                  "\n  segments:", segments.count)
-            
-            let numSegments = segments.count
-            var segmentIndex = 0
-            
-            let timer = Timer.scheduledTimer(withTimeInterval: 0.01, repeats: true) { timer in
-                let segment = segments[segmentIndex]
-                /// TODO overlap segments
-                let multipliedArray = segment.map { $0 * 1000.0 }
-                for _ in 0..<2 {
-                    self.processData(values16: nil, valuesFloat: multipliedArray)
-                }
-                DispatchQueue.main.async { [self] in
-                    outputImage = makeAudioSpectrogramImage()
-                }
-                if segmentIndex >= numSegments-1 {
-                    timer.invalidate()
-                }
-                segmentIndex += 1
+                frames.append(frame)
             }
 
-            // Start the timer
-            RunLoop.current.add(timer, forMode: .common)
+            print("\nTotalSamples:\(str(Int(totalSamples))), Duration:\(str(durationSeconds)) seconds, SamplingRate:\(audioFile.fileFormat.sampleRate)")
+            print("  FrameLength:\(AudioSpectrogram.samplesPerFrame) TotalFrames:\(str(Int(frames.count))), FrameDuration:\(str(frameDuration))")
+
+            let numSegments = frames.count
+            var segmentIndex = 0
+            
+            if true {
+                let timer = Timer.scheduledTimer(withTimeInterval: 0.01, repeats: true) { timer in
+                    let frame = frames[segmentIndex]
+                    /// TODO overlap segments
+                    let multipliedArray = frame.map { $0 * 1000.0 }
+                    //for _ in 0..<2 { WHY ????
+                        self.processData(values16: nil, valuesFloat: multipliedArray)
+                    //}
+                    DispatchQueue.main.async { [self] in
+                        outputImage = makeAudioSpectrogramImage()
+                    }
+                    if segmentIndex >= numSegments-1 {
+                        timer.invalidate()
+                    }
+                    segmentIndex += 1
+                }
+                
+                // Start the timer
+                RunLoop.current.add(timer, forMode: .common)
+            }
+            else {
+                for frameIndex in 0..<frames.count {
+                    let frame = frames[frameIndex]
+                    let multipliedArray = frame.map { $0 * 1000.0 }
+                    for _ in 0..<2 {
+                        self.processData(values16: nil, valuesFloat: multipliedArray)
+                    }
+
+                }
+            }
 
             print("==========DONE==========")
         }
@@ -403,6 +478,7 @@ extension AudioSpectrogram {
         }
         return String(format: "%.2f", inVal!)
     }
+    
     func str(_ inVal:Double?) -> String {
         if inVal == nil {
             return "nil"
@@ -410,6 +486,11 @@ extension AudioSpectrogram {
 
         return String(format: "%.2f", inVal!)
     }
+    
+    func str(_ inVal:Int) -> String {
+        numberFormatter.string(from: NSNumber(value: inVal)) ?? ""
+    }
+
 
 // FFT ========================
 

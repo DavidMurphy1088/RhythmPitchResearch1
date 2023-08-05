@@ -1,7 +1,7 @@
 
 Using swift I have an AVAudioFile of 10 seconds of a simple piano melody with 10 notes. I know the exact frames in the audio file where each note starts. How can I calculate the pitch the note was played at?
 
-Using swift I have an AVAudioFile of 10 seconds of a simple piano melody recorded with 10 notes. How can I use AudioKit to 1) determine the start and duration of each note in the audio file and 2) determie the pictch of each note.
+Using swift I have an AVAudioFile of 10 seconds of a simple piano melody recorded with 10 notes. How can I use AudioKit to 1) determine the start and duration of each note in the audio file and 2) determie the pitch of each note.
 
 Using swift I have a short AVAudioFile of a simple piano melody recorded with 10 notes. How can I  1) determine the start and duration of each note in the audio file and 2) determie the pictch of each note. Please give example code that uses Apple's Swift code. Please ensure the example code provided will compile without errors.
 
@@ -33,7 +33,9 @@ give sample Swift code that can analyse the output of an FFT and return the MIDI
 is there a website or tool that can take a recording of a simple pinao melody and determine the rhythm and pitch of the notes recorded?
 
 ==================
-Using swift I have an AVAudioFile of 10 seconds of a simple piano melody with 10 notes. The sampling rate is 44100 per second for the input frame buffer which is a AVAudioPCMBuffer. I need to analyse the input frame values in the audio file to detect note onsets. I smooth the input buffer to reduce noise by segmenting the inout buffer into fixed length segments. What would be the recommended length in millsecnds of ech segment?
+Using swift I have an AVAudioFile of 10 seconds of a simple piano melody with 10 notes. The sampling rate is 44100 per second for the input frame buffer which is a AVAudioPCMBuffer. I need to analyse the input frame values in the audio file to detect note onsets.
+
+I smooth the input buffer to reduce noise by segmenting the inout buffer into fixed length segments. What would be the recommended length in millsecnds of ech segment?
 Determine the average duration of a single note in your piano melody. Let's say it's approximately 1 second.
 
 Choose a fraction of the note duration as the segment length. For example, you can start with a segment length of 100 milliseconds (0.1 seconds), which is one-tenth of the average note duration.
@@ -49,3 +51,18 @@ Filtering: Apply filters to remove unwanted noise or emphasize specific frequenc
 Low-pass filter: Removes high-frequency components, retaining only the lower frequencies relevant to the piano notes.
 High-pass filter: Removes low-frequency components, keeping only the higher frequencies.
 Band-pass filter: Passes a specific range of frequencies and attenuates others. You can use a band-pass filter to focus on the frequency range of the piano notes.
+===========
+Ghat GPT 4
+===========
+
+Using swift I have an AVAudioFile of length 10 seconds recording an acoustic piano playing a melody with 10 notes. The sampling rate is 44100 per second for the input frame buffer which is a AVAudioPCMBuffer. I need to analyse the input frame values in the audio file to detect note onsets.
+
+1. What other techniques should I use preparatory to analysing the audio recording for note onsets
+2. What techniques should I used to detect the onset of notes?
+
+LIBROSA
+PAPER https://conference.scipy.org/proceedings/scipy2015/pdfs/brian_mcfee.pdf
+DEMO  https://www.youtube.com/watch?v=ZqpSb5p1xQo for libroasa demo
+
+
+Sequencer - https://onlinesequencer.net/

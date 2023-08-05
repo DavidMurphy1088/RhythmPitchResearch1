@@ -4,7 +4,7 @@ import Foundation
 
 struct ContentViewAnalyse: View {
     @ObservedObject var audio = Audio()
-    let name = "Example 2_SkyPad" //GABCBAG_Sine"
+    let name = "CGC" //"Example 2_SkyPad" //GABCBAG_Sine"
     @State var offset:Double = 0.0 //8000.0
     @State var windowSizePercent:Double = 33.0
     @State var magnifyPercent:Double = 10.0
