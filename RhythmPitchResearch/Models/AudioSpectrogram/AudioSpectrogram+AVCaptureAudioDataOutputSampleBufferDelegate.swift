@@ -10,86 +10,6 @@ import AVFoundation
 // MARK: AVCaptureAudioDataOutputSampleBufferDelegate and AVFoundation Support
 
 extension AudioSpectrogram: AVCaptureAudioDataOutputSampleBufferDelegate {
-    
-    public func captureOutput(_ output: AVCaptureOutput,
-                              didOutput sampleBuffer: CMSampleBuffer,
-                              from connection: AVCaptureConnection) {
-        self.captureOutputCtr += 1
-        if self.speed == 1000 {
-            return
-        }
-        if self.captureOutputCtr % Int(speed) > 0 {
-            return
-        }
-        var audioBufferList = AudioBufferList()
-        var blockBuffer: CMBlockBuffer?
-  
-        CMSampleBufferGetAudioBufferListWithRetainedBlockBuffer(
-            sampleBuffer,
-            bufferListSizeNeededOut: nil,
-            bufferListOut: &audioBufferList,
-            bufferListSize: MemoryLayout.stride(ofValue: audioBufferList),
-            blockBufferAllocator: nil,
-            blockBufferMemoryAllocator: nil,
-            flags: kCMSampleBufferFlag_AudioBufferList_Assure16ByteAlignment,
-            blockBufferOut: &blockBuffer)
-        
-        guard let data = audioBufferList.mBuffers.mData else {
-            return
-        }
-        
-        /// The _Nyquist frequency_ is the highest frequency that a sampled system can properly
-        /// reproduce and is half the sampling rate of such a system. Although  this app doesn't use
-        /// `nyquistFrequency`,  you may find this code useful to add an overlay to the user interface.
-        if nyquistFrequency == nil {
-            let duration = Float(CMSampleBufferGetDuration(sampleBuffer).value)
-            let timescale = Float(CMSampleBufferGetDuration(sampleBuffer).timescale)
-            let numsamples = Float(CMSampleBufferGetNumSamples(sampleBuffer))
-            nyquistFrequency = 0.5 / (duration / timescale / numsamples)
-        }
-        
-        /// Because the audio spectrogram code requires exactly `sampleCount` (which the app defines
-        /// as 1024) samples, but audio sample buffers from AVFoundation may not always contain exactly
-        /// 1024 samples, the app adds the contents of each audio sample buffer to `rawAudioData`.
-        ///
-        /// The following code creates an array from `data` and appends it to  `rawAudioData`:
-        if self.rawAudioData.count < AudioSpectrogram.samplesPerFrame * 2 {
-            let actualSampleCount = CMSampleBufferGetNumSamples(sampleBuffer)
-            
-            let pointer = data.bindMemory(to: Int16.self,
-                                          capacity: actualSampleCount)
-            let buffer = UnsafeBufferPointer(start: pointer,
-                                             count: actualSampleCount)
-            
-            rawAudioData.append(contentsOf: Array(buffer))
-        }
-
-        /// The following code app passes the first `sampleCount`elements of raw audio data to the
-        /// `processData(values:)` function, and removes the first `hopCount` elements from
-        /// `rawAudioData`.
-        ///
-        /// By removing fewer elements than each step processes, the rendered frames of data overlap,
-        /// ensuring no loss of audio data.
-        while self.rawAudioData.count >= AudioSpectrogram.samplesPerFrame {
-            let dataToProcess = Array(self.rawAudioData[0 ..< AudioSpectrogram.samplesPerFrame])
-            self.rawAudioData.removeFirst(AudioSpectrogram.hopCount)
-            
-//            if false && ctr1 % 200 == 0 {
-//                print ("called captureOutput", ctr1, dataToProcess.count)
-//
-//                let sum = dataToProcess.reduce(0, +)
-//                print(ctr1, dataToProcess.count, "MAX:", dataToProcess.max(),
-//                      "AVG:", Double(sum) / Double(dataToProcess.count))
-//            }
-            self.processData(values16: dataToProcess)
-        }
-        
-        DispatchQueue.main.async { [self] in
-            outputImage = makeAudioSpectrogramImage()
-        }
-
-    }
-    
     func configureCaptureSession() {
         // Also note that:
         //
@@ -163,4 +83,86 @@ extension AudioSpectrogram: AVCaptureAudioDataOutputSampleBufferDelegate {
             }
         }
     }
+
+//    public func captureOutput(_ output: AVCaptureOutput,
+//                              didOutput sampleBuffer: CMSampleBuffer,
+//                              from connection: AVCaptureConnection) {
+//        return
+//        //TODO what is all this code below.....
+//        self.captureOutputCtr += 1
+//        if self.speed == 1000 {
+//            return
+//        }
+//        if self.captureOutputCtr % Int(speed) > 0 {
+//            return
+//        }
+//        var audioBufferList = AudioBufferList()
+//        var blockBuffer: CMBlockBuffer?
+//
+//        CMSampleBufferGetAudioBufferListWithRetainedBlockBuffer(
+//            sampleBuffer,
+//            bufferListSizeNeededOut: nil,
+//            bufferListOut: &audioBufferList,
+//            bufferListSize: MemoryLayout.stride(ofValue: audioBufferList),
+//            blockBufferAllocator: nil,
+//            blockBufferMemoryAllocator: nil,
+//            flags: kCMSampleBufferFlag_AudioBufferList_Assure16ByteAlignment,
+//            blockBufferOut: &blockBuffer)
+//
+//        guard let data = audioBufferList.mBuffers.mData else {
+//            return
+//        }
+//
+//        /// The _Nyquist frequency_ is the highest frequency that a sampled system can properly
+//        /// reproduce and is half the sampling rate of such a system. Although  this app doesn't use
+//        /// `nyquistFrequency`,  you may find this code useful to add an overlay to the user interface.
+//        if nyquistFrequency == nil {
+//            let duration = Float(CMSampleBufferGetDuration(sampleBuffer).value)
+//            let timescale = Float(CMSampleBufferGetDuration(sampleBuffer).timescale)
+//            let numsamples = Float(CMSampleBufferGetNumSamples(sampleBuffer))
+//            nyquistFrequency = 0.5 / (duration / timescale / numsamples)
+//        }
+//
+//        /// Because the audio spectrogram code requires exactly `sampleCount` (which the app defines
+//        /// as 1024) samples, but audio sample buffers from AVFoundation may not always contain exactly
+//        /// 1024 samples, the app adds the contents of each audio sample buffer to `rawAudioData`.
+//        ///
+//        /// The following code creates an array from `data` and appends it to  `rawAudioData`:
+//        if self.rawAudioData.count < Int(samplesPerFrame) * 2 {
+//            let actualSampleCount = CMSampleBufferGetNumSamples(sampleBuffer)
+//
+//            let pointer = data.bindMemory(to: Int16.self,
+//                                          capacity: actualSampleCount)
+//            let buffer = UnsafeBufferPointer(start: pointer,
+//                                             count: actualSampleCount)
+//
+//            rawAudioData.append(contentsOf: Array(buffer))
+//        }
+//
+//        /// The following code app passes the first `sampleCount`elements of raw audio data to the
+//        /// `processData(values:)` function, and removes the first `hopCount` elements from
+//        /// `rawAudioData`.
+//        ///
+//        /// By removing fewer elements than each step processes, the rendered frames of data overlap,
+//        /// ensuring no loss of audio data.
+//        while self.rawAudioData.count >= Int(samplesPerFrame) {
+//            let dataToProcess = Array(self.rawAudioData[0 ..< Int(samplesPerFrame)])
+//            self.rawAudioData.removeFirst(hopCount)
+//
+////            if false && ctr1 % 200 == 0 {
+////                print ("called captureOutput", ctr1, dataToProcess.count)
+////
+////                let sum = dataToProcess.reduce(0, +)
+////                print(ctr1, dataToProcess.count, "MAX:", dataToProcess.max(),
+////                      "AVG:", Double(sum) / Double(dataToProcess.count))
+////            }
+//            self.processData(values16: dataToProcess)
+//        }
+//
+//        DispatchQueue.main.async { [self] in
+//            outputImage = makeAudioSpectrogramImage()
+//        }
+//
+//    }
+    
 }
