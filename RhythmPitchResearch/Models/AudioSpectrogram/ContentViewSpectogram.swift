@@ -3,6 +3,7 @@ import SwiftUI
 struct ContentViewSpectogram: View {
     
     @EnvironmentObject var audioSpectrogram: AudioSpectrogram
+    var noteAnalyzer = NoteOnsetAnalyser()
     //@State var audioSpectrogram:AudioSpectrogram = AudioSpectrogram()
 
     var body: some View {
@@ -16,7 +17,7 @@ struct ContentViewSpectogram: View {
             
                 HStack {
                     Button(action: {
-                        audioSpectrogram.analyzeFile()
+                        noteAnalyzer.analyzeFile()
                     }) {
                         Text("Test Read WAV File")
                     }

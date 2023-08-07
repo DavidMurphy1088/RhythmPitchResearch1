@@ -3,4 +3,166 @@
    uuid = "03C48098-F1AF-436C-BE73-7741A0A36086"
    type = "1"
    version = "2.0">
+   <Breakpoints>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "5190717E-9841-4014-9384-13E7E9EEA97B"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "RhythmPitchResearch/NotesOnsetAnalyzer.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "164"
+            endingLineNumber = "164"
+            landmarkName = "calcNoteOnsets(ctx:increaseCutoff:maxCutoff:frames:)"
+            landmarkType = "7">
+            <Locations>
+               <Location
+                  uuid = "5190717E-9841-4014-9384-13E7E9EEA97B - 8707f80c1f48031c"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "RhythmPitchResearch.NoteOnsetAnalyser.analyzeFile() -&gt; ()"
+                  moduleName = "RhythmPitchResearch"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/davidm/Projects/RhythmPitchResearch/RhythmPitchResearch/NotesOnsetAnalyzer.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "167"
+                  endingLineNumber = "167"
+                  offsetFromSymbolStart = "535">
+               </Location>
+               <Location
+                  uuid = "5190717E-9841-4014-9384-13E7E9EEA97B - e26da54cb287144d"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "RhythmPitchResearch.NoteOnsetAnalyser.calcNoteOnsets(ctx: Swift.String, increaseCutoff: Swift.Float, maxCutoff: Swift.Float, frames: Swift.Array&lt;Swift.Array&lt;Swift.Float&gt;&gt;) -&gt; Swift.Array&lt;RhythmPitchResearch.NoteOnset&gt;"
+                  moduleName = "RhythmPitchResearch"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/davidm/Projects/RhythmPitchResearch/RhythmPitchResearch/NotesOnsetAnalyzer.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "163"
+                  endingLineNumber = "163"
+                  offsetFromSymbolStart = "5675">
+               </Location>
+            </Locations>
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "58BECA34-510E-4D7F-8590-853D2EF1E97F"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "RhythmPitchResearch/NotesOnsetAnalyzer.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "166"
+            endingLineNumber = "166"
+            landmarkName = "calcNoteOnsets(ctx:increaseCutoff:maxCutoff:frames:)"
+            landmarkType = "7">
+            <Locations>
+               <Location
+                  uuid = "58BECA34-510E-4D7F-8590-853D2EF1E97F - e26da54cb287158f"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "RhythmPitchResearch.NoteOnsetAnalyser.calcNoteOnsets(ctx: Swift.String, increaseCutoff: Swift.Float, maxCutoff: Swift.Float, frames: Swift.Array&lt;Swift.Array&lt;Swift.Float&gt;&gt;) -&gt; Swift.Array&lt;RhythmPitchResearch.NoteOnset&gt;"
+                  moduleName = "RhythmPitchResearch"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/davidm/Projects/RhythmPitchResearch/RhythmPitchResearch/NotesOnsetAnalyzer.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "165"
+                  endingLineNumber = "165"
+                  offsetFromSymbolStart = "4853">
+               </Location>
+               <Location
+                  uuid = "58BECA34-510E-4D7F-8590-853D2EF1E97F - e26da54cb287158f"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "RhythmPitchResearch.NoteOnsetAnalyser.calcNoteOnsets(ctx: Swift.String, increaseCutoff: Swift.Float, maxCutoff: Swift.Float, frames: Swift.Array&lt;Swift.Array&lt;Swift.Float&gt;&gt;) -&gt; Swift.Array&lt;RhythmPitchResearch.NoteOnset&gt;"
+                  moduleName = "RhythmPitchResearch"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/davidm/Projects/RhythmPitchResearch/RhythmPitchResearch/NotesOnsetAnalyzer.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "165"
+                  endingLineNumber = "165"
+                  offsetFromSymbolStart = "5262">
+               </Location>
+            </Locations>
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "4C4E3BE2-275C-4B56-8F92-01AD5B48FAB1"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "RhythmPitchResearch/NotesOnsetAnalyzer.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "161"
+            endingLineNumber = "161"
+            landmarkName = "calcNoteOnsets(ctx:increaseCutoff:maxCutoff:frames:)"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "3D2F3606-F84F-4395-BC39-5881ABAE5E69"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "RhythmPitchResearch/NotesOnsetAnalyzer.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "123"
+            endingLineNumber = "123"
+            landmarkName = "calcNoteOnsets(ctx:increaseCutoff:maxCutoff:frames:)"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "BA06F6C7-7E80-4FF4-8435-BDFA94F95C8B"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "RhythmPitchResearch/NotesOnsetAnalyzer.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "128"
+            endingLineNumber = "128"
+            landmarkName = "calcNoteOnsets(ctx:increaseCutoff:maxCutoff:frames:)"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "92C93FCE-8DDC-4B23-B723-3B38B9CC9940"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "RhythmPitchResearch/NotesOnsetAnalyzer.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "129"
+            endingLineNumber = "129"
+            landmarkName = "calcNoteOnsets(ctx:increaseCutoff:maxCutoff:frames:)"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+   </Breakpoints>
 </Bucket>

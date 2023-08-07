@@ -28,12 +28,18 @@
 		7B218B782A42E98600EA4B08 /* Ex1_Sine.wav in Resources */ = {isa = PBXBuildFile; fileRef = 7B218B762A42E98600EA4B08 /* Ex1_Sine.wav */; };
 		7B218B792A42E98600EA4B08 /* Ex1_Sine.wav in Resources */ = {isa = PBXBuildFile; fileRef = 7B218B762A42E98600EA4B08 /* Ex1_Sine.wav */; };
 		7B62786F2A5430F80032561F /* Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 7B62786E2A5430F80032561F /* Info.plist */; };
-		7B83DDC32A44F70200E6BDD9 /* Ex1_Sine_Short.wav in Resources */ = {isa = PBXBuildFile; fileRef = 7B83DDC22A44F70200E6BDD9 /* Ex1_Sine_Short.wav */; };
 		7BD45C242A53F1FA00AD360B /* AudioSpectrogram.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BD45C222A53F1F900AD360B /* AudioSpectrogram.swift */; };
 		7BD45C252A53F1FA00AD360B /* ContentViewSpectogram.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BD45C232A53F1FA00AD360B /* ContentViewSpectogram.swift */; };
 		7BD45C282A53F21400AD360B /* MelSpectrogram.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BD45C262A53F21400AD360B /* MelSpectrogram.swift */; };
 		7BD45C292A53F21400AD360B /* AudioSpectrogramApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BD45C272A53F21400AD360B /* AudioSpectrogramApp.swift */; };
 		7BD45C2B2A53F28300AD360B /* AudioSpectrogram+AVCaptureAudioDataOutputSampleBufferDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BD45C2A2A53F28300AD360B /* AudioSpectrogram+AVCaptureAudioDataOutputSampleBufferDelegate.swift */; };
+		7BF49F0F2A80D4F600E6948B /* quarter1eight4_Octave.m4a in Resources */ = {isa = PBXBuildFile; fileRef = 7BF49F0E2A80D4F600E6948B /* quarter1eight4_Octave.m4a */; };
+		7BF49F112A80D6AA00E6948B /* Quarter1Eigth2_Octave.m4a in Resources */ = {isa = PBXBuildFile; fileRef = 7BF49F102A80D6AA00E6948B /* Quarter1Eigth2_Octave.m4a */; };
+		7BF49F132A80DAB200E6948B /* NotesOnsetAnalyzer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BF49F122A80DAB200E6948B /* NotesOnsetAnalyzer.swift */; };
+		7BF49F1D2A80F3B100E6948B /* SineUp_PianoDown_Octave.wav in Resources */ = {isa = PBXBuildFile; fileRef = 7BF49F1C2A80F3B100E6948B /* SineUp_PianoDown_Octave.wav */; };
+		7BF49F1F2A81022500E6948B /* iPhone_Ex1_Piano.m4a in Resources */ = {isa = PBXBuildFile; fileRef = 7BF49F1E2A81022500E6948B /* iPhone_Ex1_Piano.m4a */; };
+		7BF49F212A8107DE00E6948B /* iPhone_Ex4_Piano.m4a in Resources */ = {isa = PBXBuildFile; fileRef = 7BF49F202A8107DE00E6948B /* iPhone_Ex4_Piano.m4a */; };
+		7BF49F232A810F6900E6948B /* iPhone_Ex27_Piano.m4a in Resources */ = {isa = PBXBuildFile; fileRef = 7BF49F222A810F6900E6948B /* iPhone_Ex27_Piano.m4a */; };
 		7BF840A12A7E0D7E000287C4 /* CGC.wav in Resources */ = {isa = PBXBuildFile; fileRef = 7BF840A02A7E0D7E000287C4 /* CGC.wav */; };
 		7BF840A82A7E1D2A000287C4 /* C_Octave_To_C_Sine.wav in Resources */ = {isa = PBXBuildFile; fileRef = 7BF840A62A7E1D2A000287C4 /* C_Octave_To_C_Sine.wav */; };
 		7BF840A92A7E1D2A000287C4 /* C_Octave_To_C_Piano.wav in Resources */ = {isa = PBXBuildFile; fileRef = 7BF840A72A7E1D2A000287C4 /* C_Octave_To_C_Piano.wav */; };
@@ -92,12 +98,18 @@
 		7B218B722A4257C000EA4B08 /* Ex1_Sine_9_Notes.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = Ex1_Sine_9_Notes.wav; sourceTree = "<group>"; };
 		7B218B762A42E98600EA4B08 /* Ex1_Sine.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = Ex1_Sine.wav; sourceTree = "<group>"; };
 		7B62786E2A5430F80032561F /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		7B83DDC22A44F70200E6BDD9 /* Ex1_Sine_Short.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = Ex1_Sine_Short.wav; sourceTree = "<group>"; };
 		7BD45C222A53F1F900AD360B /* AudioSpectrogram.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AudioSpectrogram.swift; sourceTree = "<group>"; };
 		7BD45C232A53F1FA00AD360B /* ContentViewSpectogram.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ContentViewSpectogram.swift; sourceTree = "<group>"; };
 		7BD45C262A53F21400AD360B /* MelSpectrogram.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MelSpectrogram.swift; sourceTree = "<group>"; };
 		7BD45C272A53F21400AD360B /* AudioSpectrogramApp.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AudioSpectrogramApp.swift; sourceTree = "<group>"; };
 		7BD45C2A2A53F28300AD360B /* AudioSpectrogram+AVCaptureAudioDataOutputSampleBufferDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "AudioSpectrogram+AVCaptureAudioDataOutputSampleBufferDelegate.swift"; sourceTree = "<group>"; };
+		7BF49F0E2A80D4F600E6948B /* quarter1eight4_Octave.m4a */ = {isa = PBXFileReference; lastKnownFileType = file; name = quarter1eight4_Octave.m4a; path = ../../../../Downloads/quarter1eight4_Octave.m4a; sourceTree = "<group>"; };
+		7BF49F102A80D6AA00E6948B /* Quarter1Eigth2_Octave.m4a */ = {isa = PBXFileReference; lastKnownFileType = file; path = Quarter1Eigth2_Octave.m4a; sourceTree = "<group>"; };
+		7BF49F122A80DAB200E6948B /* NotesOnsetAnalyzer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotesOnsetAnalyzer.swift; sourceTree = "<group>"; };
+		7BF49F1C2A80F3B100E6948B /* SineUp_PianoDown_Octave.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = SineUp_PianoDown_Octave.wav; sourceTree = "<group>"; };
+		7BF49F1E2A81022500E6948B /* iPhone_Ex1_Piano.m4a */ = {isa = PBXFileReference; lastKnownFileType = file; path = iPhone_Ex1_Piano.m4a; sourceTree = "<group>"; };
+		7BF49F202A8107DE00E6948B /* iPhone_Ex4_Piano.m4a */ = {isa = PBXFileReference; lastKnownFileType = file; path = iPhone_Ex4_Piano.m4a; sourceTree = "<group>"; };
+		7BF49F222A810F6900E6948B /* iPhone_Ex27_Piano.m4a */ = {isa = PBXFileReference; lastKnownFileType = file; path = iPhone_Ex27_Piano.m4a; sourceTree = "<group>"; };
 		7BF840A02A7E0D7E000287C4 /* CGC.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = CGC.wav; sourceTree = "<group>"; };
 		7BF840A62A7E1D2A000287C4 /* C_Octave_To_C_Sine.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = C_Octave_To_C_Sine.wav; sourceTree = "<group>"; };
 		7BF840A72A7E1D2A000287C4 /* C_Octave_To_C_Piano.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = C_Octave_To_C_Piano.wav; sourceTree = "<group>"; };
@@ -179,6 +191,7 @@
 				7B218B3E2A424FC900EA4B08 /* RhythmPitchResearch.xcdatamodeld */,
 				7B218B392A424FC900EA4B08 /* Preview Content */,
 				7BFFDF602A47B50A00C14F57 /* ChatGPT */,
+				7BF49F122A80DAB200E6948B /* NotesOnsetAnalyzer.swift */,
 			);
 			path = RhythmPitchResearch;
 			sourceTree = "<group>";
@@ -232,15 +245,18 @@
 		7B218B692A42567800EA4B08 /* Sounds */ = {
 			isa = PBXGroup;
 			children = (
-				7B218B722A4257C000EA4B08 /* Ex1_Sine_9_Notes.wav */,
-				7B83DDC22A44F70200E6BDD9 /* Ex1_Sine_Short.wav */,
-				7BF840A02A7E0D7E000287C4 /* CGC.wav */,
 				7BF840AA2A7E7C71000287C4 /* C_Octave_To_C_Piano_And_Down.wav */,
-				7B218B762A42E98600EA4B08 /* Ex1_Sine.wav */,
-				7BFFDF4E2A46D5AF00C14F57 /* Example 1_SkyPad.wav */,
 				7BF840A72A7E1D2A000287C4 /* C_Octave_To_C_Piano.wav */,
 				7BF840A62A7E1D2A000287C4 /* C_Octave_To_C_Sine.wav */,
+				7BF840A02A7E0D7E000287C4 /* CGC.wav */,
+				7B218B722A4257C000EA4B08 /* Ex1_Sine_9_Notes.wav */,
+				7B218B762A42E98600EA4B08 /* Ex1_Sine.wav */,
+				7BF49F1E2A81022500E6948B /* iPhone_Ex1_Piano.m4a */,
+				7BF49F222A810F6900E6948B /* iPhone_Ex27_Piano.m4a */,
+				7BFFDF4E2A46D5AF00C14F57 /* Example 1_SkyPad.wav */,
 				7BFFDF4C2A46D5AF00C14F57 /* Example 2_SkyPad.wav */,
+				7BF49F1C2A80F3B100E6948B /* SineUp_PianoDown_Octave.wav */,
+				7BF49F202A8107DE00E6948B /* iPhone_Ex4_Piano.m4a */,
 				7BFFDF4B2A46D5AF00C14F57 /* Example 3_SkyPad.wav */,
 				7BFFDF512A46D5AF00C14F57 /* Example 4_SkyPad.wav */,
 				7BFFDF4A2A46D5AE00C14F57 /* Example 5_SkyPad.wav */,
@@ -250,6 +266,8 @@
 				7BFFDF4D2A46D5AF00C14F57 /* Example 8_SkyPad.wav */,
 				7BFFDF482A46D59E00C14F57 /* Example 9_SkyPad.wav */,
 				7BFFDF642A4852E000C14F57 /* GABCBAG_Sine.wav */,
+				7BF49F0E2A80D4F600E6948B /* quarter1eight4_Octave.m4a */,
+				7BF49F102A80D6AA00E6948B /* Quarter1Eigth2_Octave.m4a */,
 			);
 			path = Sounds;
 			sourceTree = "<group>";
@@ -372,14 +390,19 @@
 			files = (
 				7BFFDF652A4852E000C14F57 /* GABCBAG_Sine.wav in Resources */,
 				7B218B3B2A424FC900EA4B08 /* Preview Assets.xcassets in Resources */,
+				7BF49F1D2A80F3B100E6948B /* SineUp_PianoDown_Octave.wav in Resources */,
+				7BF49F112A80D6AA00E6948B /* Quarter1Eigth2_Octave.m4a in Resources */,
 				7B62786F2A5430F80032561F /* Info.plist in Resources */,
-				7B83DDC32A44F70200E6BDD9 /* Ex1_Sine_Short.wav in Resources */,
 				7BFFDF612A47B50A00C14F57 /* ChatGPT in Resources */,
 				7B218B382A424FC900EA4B08 /* Assets.xcassets in Resources */,
 				7BF840A92A7E1D2A000287C4 /* C_Octave_To_C_Piano.wav in Resources */,
+				7BF49F0F2A80D4F600E6948B /* quarter1eight4_Octave.m4a in Resources */,
 				7B218B732A4257C000EA4B08 /* Ex1_Sine_9_Notes.wav in Resources */,
+				7BF49F232A810F6900E6948B /* iPhone_Ex27_Piano.m4a in Resources */,
 				7BFFDF582A46D5AF00C14F57 /* Example 6_SkyPad.wav in Resources */,
+				7BF49F1F2A81022500E6948B /* iPhone_Ex1_Piano.m4a in Resources */,
 				7BFFDF532A46D5AF00C14F57 /* Example 5_SkyPad.wav in Resources */,
+				7BF49F212A8107DE00E6948B /* iPhone_Ex4_Piano.m4a in Resources */,
 				7BF840AB2A7E7C71000287C4 /* C_Octave_To_C_Piano_And_Down.wav in Resources */,
 				7BFFDF592A46D5AF00C14F57 /* Example 7_SkyPad.wav in Resources */,
 				7BFFDF542A46D5AF00C14F57 /* Example 3_SkyPad.wav in Resources */,
@@ -433,6 +456,7 @@
 				7B218B402A424FC900EA4B08 /* RhythmPitchResearch.xcdatamodeld in Sources */,
 				7B218B652A42510800EA4B08 /* ChartView.swift in Sources */,
 				7B218B342A424FC600EA4B08 /* RhythmPitchResearchApp.swift in Sources */,
+				7BF49F132A80DAB200E6948B /* NotesOnsetAnalyzer.swift in Sources */,
 				7BFFDF632A48348B00C14F57 /* FFT.swift in Sources */,
 				7BD45C292A53F21400AD360B /* AudioSpectrogramApp.swift in Sources */,
 				7BD45C2B2A53F28300AD360B /* AudioSpectrogram+AVCaptureAudioDataOutputSampleBufferDelegate.swift in Sources */,
