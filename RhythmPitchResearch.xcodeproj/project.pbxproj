@@ -251,12 +251,8 @@
 				7BF840A02A7E0D7E000287C4 /* CGC.wav */,
 				7B218B722A4257C000EA4B08 /* Ex1_Sine_9_Notes.wav */,
 				7B218B762A42E98600EA4B08 /* Ex1_Sine.wav */,
-				7BF49F1E2A81022500E6948B /* iPhone_Ex1_Piano.m4a */,
-				7BF49F222A810F6900E6948B /* iPhone_Ex27_Piano.m4a */,
 				7BFFDF4E2A46D5AF00C14F57 /* Example 1_SkyPad.wav */,
 				7BFFDF4C2A46D5AF00C14F57 /* Example 2_SkyPad.wav */,
-				7BF49F1C2A80F3B100E6948B /* SineUp_PianoDown_Octave.wav */,
-				7BF49F202A8107DE00E6948B /* iPhone_Ex4_Piano.m4a */,
 				7BFFDF4B2A46D5AF00C14F57 /* Example 3_SkyPad.wav */,
 				7BFFDF512A46D5AF00C14F57 /* Example 4_SkyPad.wav */,
 				7BFFDF4A2A46D5AE00C14F57 /* Example 5_SkyPad.wav */,
@@ -266,8 +262,12 @@
 				7BFFDF4D2A46D5AF00C14F57 /* Example 8_SkyPad.wav */,
 				7BFFDF482A46D59E00C14F57 /* Example 9_SkyPad.wav */,
 				7BFFDF642A4852E000C14F57 /* GABCBAG_Sine.wav */,
+				7BF49F1E2A81022500E6948B /* iPhone_Ex1_Piano.m4a */,
+				7BF49F202A8107DE00E6948B /* iPhone_Ex4_Piano.m4a */,
+				7BF49F222A810F6900E6948B /* iPhone_Ex27_Piano.m4a */,
 				7BF49F0E2A80D4F600E6948B /* quarter1eight4_Octave.m4a */,
 				7BF49F102A80D6AA00E6948B /* Quarter1Eigth2_Octave.m4a */,
+				7BF49F1C2A80F3B100E6948B /* SineUp_PianoDown_Octave.wav */,
 			);
 			path = Sounds;
 			sourceTree = "<group>";

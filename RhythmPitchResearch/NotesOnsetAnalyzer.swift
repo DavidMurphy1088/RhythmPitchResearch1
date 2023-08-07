@@ -91,13 +91,14 @@ class NoteOnsetAnalyser {
         return frequencyDomainValues
     }
     
-    func calcNoteOnsets(ctx:String, increaseCutoff:Float, maxCutoff:Float, frames:[[Float]]) -> [NoteOnset] {
+    ///Loook for onsets across all frames
+    func calcNoteOnsetsFullScan(ctx:String, increaseCutoff:Float, maxCutoff:Float, frames:[[Float]]) -> [NoteOnset] {
         var offsets:[NoteOnset] = []
         let sliceLen = 8
         let cutoff:Float = 1.35 //increaseCutoff
         var frameIndex = sliceLen+1
         var firstValue:Int?
-        /Users/davidm/Downloads/iPhone_Ex27_Piano.m4a
+        
         while frameIndex < frames.count - sliceLen-1 {
             let frame = frames[frameIndex]
             let frameAvg = getAvg(frame)
@@ -117,7 +118,7 @@ class NoteOnsetAnalyser {
             
             // compare to prev avg
             let increaseFromPrev = frameAvg / prevAvg
-            let increaseToNext = frameAvg / nextAvg
+            //let increaseToNext = frameAvg / nextAvg
             
             if frameIndex == 410 {
                 frameIndex = frameIndex + 0
@@ -178,9 +179,113 @@ class NoteOnsetAnalyser {
 
         return offsets
     }
+    
+    // =====================================================
+    
+    func getNoteOnsetFrom(frames:[[Float]], startIndex:Int, thresholdIncrease:Float ) -> NoteOnset? {
+        
+        let sliceLen = 8
+        var frameIndex = startIndex
+        
+        while frameIndex < frames.count - sliceLen-1 {
+            let frame = frames[frameIndex]
+            let frameAvg = getAvg(frame)
+            
+            //print("\(frameIndex),   \(str(frameAvg * 10,dec:4))")
+            
+            var prev:[Float] = []
+            var next:[Float] = []
+            for i in 1..<sliceLen + 1 {
+                //                prev.append(frame[frameCount-i])
+                //                next.append(frame[frameCount+i])
+                prev.append(getAvg(frames[frameIndex-i]))
+                next.append(getAvg(frames[frameIndex+i]))
+            }
+            let prevAvg = getAvg(prev)
+            let nextAvg = getAvg(next)
+            
+            // compare to prev avg
+            let increaseFromPrev = frameAvg / prevAvg
+            //let increaseToNext = frameAvg / nextAvg
+            
+            if frameIndex == 410 {
+                frameIndex = frameIndex + 0
+            }
+            
+            if frameAvg > 0.02 {
+                if increaseFromPrev > thresholdIncrease {
+                    if frameAvg > getAvg(frames[frameIndex-1]) && frameAvg > getAvg(frames[frameIndex+1]) {
+                        let onset = NoteOnset(onsetFrame: frameIndex, dataValue: frameAvg, increaseThatTriggeredOnset: increaseFromPrev)
+                        return onset
+                    }
+                }
+            }
+            frameIndex += 1
+        }
+        return nil
+    }
+    
+    func calcNoteOnsets(frames:[[Float]]) -> [NoteOnset] {
+        let givenValues = [2, 2, 1, 1, 2, 0.5, 0.5, 2, 1, 4]
+        //var givenIndex = 0
+        
+        var noteOnsets:[NoteOnset] = []
+        var framesIndex = 10
+        let initialThresholdIncrease:Float = 1.5
+        var currentThresholdIncrease = initialThresholdIncrease
+        
+        var framesPerUnitValue:Int?
+        var nextPredictedIndex:Int?
+        
+        while true {
+            var noteOnset = getNoteOnsetFrom(frames: frames,
+                                             startIndex: framesIndex,
+                                             thresholdIncrease: currentThresholdIncrease)
+            guard let noteOnset = noteOnset else {
+                print("No next note")
+                break
+            }
+            print(noteOnset)
+
+            if noteOnsets.count > 0 {
+                print("gotIndex:", noteOnset.onsetFrame, "predicted:", nextPredictedIndex ?? "", "threshold",
+                      str(currentThresholdIncrease))
+
+                if nextPredictedIndex != nil {
+                    let discrep = noteOnset.onsetFrame - nextPredictedIndex!
+                    let allowed = Int(Double(framesPerUnitValue!) * givenValues[noteOnsets.count-1] * 0.5)
+                    if discrep > allowed {
+                        currentThresholdIncrease *= 0.9
+                        continue
+                    }
+                }
+                
+                noteOnsets.append(noteOnset)
+                let framesDiff:Int = noteOnsets[1].onsetFrame - noteOnsets[0].onsetFrame
+                noteOnsets[noteOnsets.count - 1].frameCount = framesDiff
+                if noteOnsets.count == 2 {
+                    framesPerUnitValue = Int(Double(framesDiff) / givenValues[0])
+                }
+                nextPredictedIndex = noteOnset.onsetFrame + Int((givenValues[noteOnsets.count-1] * Double(framesPerUnitValue!)))
+                currentThresholdIncrease = initialThresholdIncrease
+                //givenIndex += 1
+                print(" Stored -->", noteOnset)
+                if noteOnset.onsetFrame == 371 {
+                    print("+++++++++++++")
+                }
+            }
+            else {
+                noteOnsets.append(noteOnset)
+            }
+            print()
+
+            framesIndex = noteOnset.onsetFrame + 8
+        }
+        return noteOnsets
+    }
 
     func analyzeFile() {
-        let name = "iPhone_Ex4_Piano"//SineUp_PianoDown_Octave" //Quarter1Eigth2_Octave"
+        let name = "iPhone_Ex27_Piano"//SineUp_PianoDown_Octave" //Quarter1Eigth2_Octave"
         let ext = "m4a"
         let noteAnalyzer = NoteOnsetAnalyser()
         //let name = "C_Octave_To_C_Piano_And_Down" //C_Octave_To_C_Piano"
@@ -227,8 +332,9 @@ class NoteOnsetAnalyser {
                 amplitudeFrames.append(frame)
             }
             
-            noteAnalyzer.calcNoteOnsets(ctx: "Amplitudes", increaseCutoff: 2.0, maxCutoff: 0.0, frames: amplitudeFrames)
-            
+            //noteAnalyzer.calcNoteOnsets(ctx: "Amplitudes", increaseCutoff: 2.0, maxCutoff: 0.0, frames: amplitudeFrames)
+            noteAnalyzer.calcNoteOnsets(frames: amplitudeFrames)
+
             print("\nTotalSamples:\(totalSamples), Duration:\(str(durationSeconds)) seconds, SamplingRate:\(audioFile.fileFormat.sampleRate)")
             print("  FrameLength:\(samplesPerFrame) TotalFrames:\(amplitudeFrames.count), FrameDuration:\(str(frameDuration))")
 

@@ -394,7 +394,7 @@ extension AudioSpectrogram {
                 amplitudeFrames.append(frame)
             }
             
-            noteAnalyzer.calcNoteOnsets(ctx: "Amplitudes", increaseCutoff: 2.0, maxCutoff: 0.0, frames: amplitudeFrames)
+            //noteAnalyzer.calcNoteOnsets(ctx: "Amplitudes", increaseCutoff: 2.0, maxCutoff: 0.0, frames: amplitudeFrames)
             
             print("\nTotalSamples:\(str(Int(totalSamples))), Duration:\(str(durationSeconds)) seconds, SamplingRate:\(audioFile.fileFormat.sampleRate)")
             print("  FrameLength:\(samplesPerFrame) TotalFrames:\(str(Int(amplitudeFrames.count))), FrameDuration:\(str(frameDuration))")
