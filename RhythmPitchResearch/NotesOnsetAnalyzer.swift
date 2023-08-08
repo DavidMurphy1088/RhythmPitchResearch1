@@ -92,7 +92,7 @@ class NoteOnsetAnalyser {
     }
     
     ///Loook for onsets across all frames
-    func calcNoteOnsetsFullScan(ctx:String, increaseCutoff:Float, maxCutoff:Float, frames:[[Float]]) -> [NoteOnset] {
+    func calcNoteOnsetsFullScanOld(ctx:String, increaseCutoff:Float, maxCutoff:Float, frames:[[Float]]) -> [NoteOnset] {
         var offsets:[NoteOnset] = []
         let sliceLen = 8
         let cutoff:Float = 1.35 //increaseCutoff
@@ -186,6 +186,9 @@ class NoteOnsetAnalyser {
         
         let sliceLen = 8
         var frameIndex = startIndex
+        var distanceFromMiddle = 1
+        var ctr = 0
+        var indexHitEdge = false
         
         while frameIndex < frames.count - sliceLen-1 {
             let frame = frames[frameIndex]
@@ -202,7 +205,7 @@ class NoteOnsetAnalyser {
                 next.append(getAvg(frames[frameIndex+i]))
             }
             let prevAvg = getAvg(prev)
-            let nextAvg = getAvg(next)
+            //let nextAvg = getAvg(next)
             
             // compare to prev avg
             let increaseFromPrev = frameAvg / prevAvg
@@ -212,7 +215,7 @@ class NoteOnsetAnalyser {
                 frameIndex = frameIndex + 0
             }
             
-            if frameAvg > 0.02 {
+            if frameAvg > 0.02 { //0.02 TODO what value
                 if increaseFromPrev > thresholdIncrease {
                     if frameAvg > getAvg(frames[frameIndex-1]) && frameAvg > getAvg(frames[frameIndex+1]) {
                         let onset = NoteOnset(onsetFrame: frameIndex, dataValue: frameAvg, increaseThatTriggeredOnset: increaseFromPrev)
@@ -221,14 +224,34 @@ class NoteOnsetAnalyser {
                 }
             }
             frameIndex += 1
+            //fan the index out from the middle in alternating directions
+//            if frameIndex <= sliceLen + 1 {
+//                indexHitEdge = true
+//            }
+//            if ctr % 2 == 0 || indexHitEdge {
+//                frameIndex = midPointIndex + distanceFromMiddle
+//                if indexHitEdge {
+//                    distanceFromMiddle += 1
+//                }
+//            }
+//            else {
+//                frameIndex = midPointIndex - distanceFromMiddle
+//                distanceFromMiddle += 1
+//            }
+            ctr += 1
         }
         return nil
     }
     
-    func calcNoteOnsets(frames:[[Float]]) -> [NoteOnset] {
-        let givenValues = [2, 2, 1, 1, 2, 0.5, 0.5, 2, 1, 4]
-        //var givenIndex = 0
+    func calcNoteOnsets(frames:[[Float]], fitToExpected:Bool) -> [NoteOnset] {
+        //let givenValues = [1,1,0.5,0.5,1,  2,2,  1,1,1,1,  4 ] //ex.1
         
+        let givenValues = [1,0.5,0.5,1,1,   1,1,1,1,   2,1,1,  4] //ex.4
+        //let givenValues = [2,2,  1,1,2,   0.5,0.5,2,1,  4] //ex.7
+        //let givenValues = [1,1,2, 2,2, 1,0.5,0.5,1,1,   4] //ex.9
+        //let givenValues = [2, 2, 1, 1, 2, 0.5, 0.5, 2, 1, 4] //ex.27
+
+
         var noteOnsets:[NoteOnset] = []
         var framesIndex = 10
         let initialThresholdIncrease:Float = 1.5
@@ -238,7 +261,7 @@ class NoteOnsetAnalyser {
         var nextPredictedIndex:Int?
         
         while true {
-            var noteOnset = getNoteOnsetFrom(frames: frames,
+            let noteOnset = getNoteOnsetFrom(frames: frames,
                                              startIndex: framesIndex,
                                              thresholdIncrease: currentThresholdIncrease)
             guard let noteOnset = noteOnset else {
@@ -248,44 +271,113 @@ class NoteOnsetAnalyser {
             print(noteOnset)
 
             if noteOnsets.count > 0 {
-                print("gotIndex:", noteOnset.onsetFrame, "predicted:", nextPredictedIndex ?? "", "threshold",
-                      str(currentThresholdIncrease))
+                print("\ngotIndex:", noteOnset.onsetFrame, "predicted:",
+                      nextPredictedIndex ?? "",
+                      "threshold", str(currentThresholdIncrease, dec: 6),
+                      "tempo", framesPerUnitValue ?? ""
+                )
 
-                if nextPredictedIndex != nil {
+                if fitToExpected && nextPredictedIndex != nil {
                     let discrep = noteOnset.onsetFrame - nextPredictedIndex!
-                    let allowed = Int(Double(framesPerUnitValue!) * givenValues[noteOnsets.count-1] * 0.5)
-                    if discrep > allowed {
-                        currentThresholdIncrease *= 0.9
-                        continue
+                    //let allowed1 = Int(Double(framesPerUnitValue!) * givenValues[noteOnsets.count-1] * 0.5)
+                    let allowed = Int(Double(framesPerUnitValue!) * 0.40)
+                    if abs(discrep) >= allowed {
+                        if discrep > 0 {
+                            //Found an onset too late and skipped the correct increase.
+                            //Look for the expected note as a smaller increase earlier.
+                            //OR the expected note was played too late in which case continued
+                            //reduction of the current threshold will never find the expected note
+                            currentThresholdIncrease *= 0.9
+                        }
+                        else {
+                            //Found an amplitude increase to soon
+                            //Look for a larger increase later on
+                            currentThresholdIncrease *= 1.1
+                        }
+                        if currentThresholdIncrease < 0.01 {
+                            //Now give up looking for the expected note before the last one just found.
+                            //without break: Assume the last one found is the right note but delayed after what was expected.
+                            //with break: Just give up
+                            break
+                        }
+                        else {
+                            continue
+                        }
                     }
                 }
                 
-                noteOnsets.append(noteOnset)
-                let framesDiff:Int = noteOnsets[1].onsetFrame - noteOnsets[0].onsetFrame
+                let framesDiff:Int = noteOnset.onsetFrame - noteOnsets[noteOnsets.count-1].onsetFrame
                 noteOnsets[noteOnsets.count - 1].frameCount = framesDiff
-                if noteOnsets.count == 2 {
-                    framesPerUnitValue = Int(Double(framesDiff) / givenValues[0])
+                
+                if noteOnsets.count >= 1 {
+                    //calculate tempo over all the notes played
+                    if fitToExpected {
+                        var tempos:[Float] = []
+                        for i in 0..<noteOnsets.count  {
+                            let tempoVal:Float
+                            if i == noteOnsets.count - 1 {
+                                tempoVal = Float(framesDiff) / Float(givenValues[i])
+                            }
+                            else {
+                                tempoVal = Float(noteOnsets[i].frameCount!) / Float(givenValues[i])
+                            }
+                            tempos.append(tempoVal)
+                            if tempos.count > 2 {
+                                //just take the most recent tempo
+                                break
+                            }
+                            //print("TEMPO=", noteOnsets.count, tempoVal, tempos)
+                        }
+                        framesPerUnitValue = Int(getAvg(tempos))
+                    }
+                    else {
+                        //Only the first note of expected is provided
+                        //Its provided in order to calculate the framesPerUnitValue based on only the first note
+                        if framesPerUnitValue == nil {
+                            framesPerUnitValue = Int(Float(framesDiff) / Float(givenValues[0]))
+                        }
+                    }
                 }
-                nextPredictedIndex = noteOnset.onsetFrame + Int((givenValues[noteOnsets.count-1] * Double(framesPerUnitValue!)))
+                
+                noteOnsets[noteOnsets.count - 1].value = Double(framesDiff) / Double(framesPerUnitValue!)
+
+                noteOnsets.append(noteOnset)
+                if fitToExpected {
+                    if noteOnsets.count == givenValues.count {
+                        break
+                    }
+                    nextPredictedIndex = noteOnset.onsetFrame + Int((givenValues[noteOnsets.count-1] * Double(framesPerUnitValue!)))
+                }
+                framesIndex = noteOnset.onsetFrame + 4 //???? TODO
                 currentThresholdIncrease = initialThresholdIncrease
-                //givenIndex += 1
+                
                 print(" Stored -->", noteOnset)
-                if noteOnset.onsetFrame == 371 {
+                if noteOnset.onsetFrame == 388 {
                     print("+++++++++++++")
                 }
             }
             else {
                 noteOnsets.append(noteOnset)
+                framesIndex = noteOnset.onsetFrame + 10
             }
-            print()
 
-            framesIndex = noteOnset.onsetFrame + 8
         }
         return noteOnsets
     }
-
+    
+    ///Note onsets are analysed successivly in two modes -
+    ///
+    ///1) With guidance from the expected notes. The first note onset analysis of the student's playing
+    ///This allows the analysis to look for the sometimes small amplitude increases that signify a new note. i.e. flag a correct playing of note values even if they are hard to detect.
+    ///Amplitude changes are often small between quavers since the sound from #1 is still ringinging when #2 starts.
+    ///Guidance causes the analysis to detect smaller changes when it knows to expect a note but does not find it when looking at coarser amplitude changes
+    ///
+    ///2) Without guidance - if 1) cannot make a good match to the expected notes (e.g. the student played the note values wrongly) make a 2nd pass without guidance
+    ///This allows the app to at least provide some sort of feedback to the student as to what it 'thinks' it heard.
+    
     func analyzeFile() {
-        let name = "iPhone_Ex27_Piano"//SineUp_PianoDown_Octave" //Quarter1Eigth2_Octave"
+        //let name = "iPhone_Ex1_Piano"//SineUp_PianoDown_Octave" //Quarter1Eigth2_Octave"
+        let name = "iPhone_Ex4_Piano"
         let ext = "m4a"
         let noteAnalyzer = NoteOnsetAnalyser()
         //let name = "C_Octave_To_C_Piano_And_Down" //C_Octave_To_C_Piano"
@@ -329,19 +421,26 @@ class NoteOnsetAnalyser {
                     let sample = abs(channelData[Int(sampleIndex)])
                     frame.append(sample)
                 }
+                //print("\(amplitudeFrames.count),   \(str(getAvg(frame),dec:4))")
                 amplitudeFrames.append(frame)
             }
-            
-            //noteAnalyzer.calcNoteOnsets(ctx: "Amplitudes", increaseCutoff: 2.0, maxCutoff: 0.0, frames: amplitudeFrames)
-            noteAnalyzer.calcNoteOnsets(frames: amplitudeFrames)
-
             print("\nTotalSamples:\(totalSamples), Duration:\(str(durationSeconds)) seconds, SamplingRate:\(audioFile.fileFormat.sampleRate)")
             print("  FrameLength:\(samplesPerFrame) TotalFrames:\(amplitudeFrames.count), FrameDuration:\(str(frameDuration))")
 
-            let numSegments = amplitudeFrames.count
-            var segmentIndex = 0
+            for i in 0..<2 {
+                let noteOnsets = noteAnalyzer.calcNoteOnsets(frames: amplitudeFrames,
+                                                             fitToExpected: i==0)
+                
+                print("===== \(i) Returned notes =====")
+                for i in 0..<noteOnsets.count {
+                    print(i, noteOnsets[i])
+                }
+                let numSegments = amplitudeFrames.count
+                var segmentIndex = 0
+                print()
+            }
             
-            var frequencies:[[Float]] = []
+            //var frequencies:[[Float]] = []
         }
         catch {
             print("Error loading file: \(error.localizedDescription)")
