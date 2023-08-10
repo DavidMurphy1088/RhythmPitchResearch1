@@ -32,6 +32,7 @@
 		7BB8ED5D2A839B3F0023A769 /* AudioKit.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BB8ED5C2A839B3F0023A769 /* AudioKit.swift */; };
 		7BB8ED602A839C870023A769 /* AudioKit in Frameworks */ = {isa = PBXBuildFile; productRef = 7BB8ED5F2A839C870023A769 /* AudioKit */; };
 		7BC1315F2A84A8E200B52471 /* PitchTap.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BC1315E2A84A8E200B52471 /* PitchTap.swift */; };
+		7BCB034E2A8500640011D381 /* Sequencer_C_To_G.wav in Resources */ = {isa = PBXBuildFile; fileRef = 7BCB034D2A8500640011D381 /* Sequencer_C_To_G.wav */; };
 		7BD45C242A53F1FA00AD360B /* AudioSpectrogram.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BD45C222A53F1F900AD360B /* AudioSpectrogram.swift */; };
 		7BD45C252A53F1FA00AD360B /* ContentViewSpectogram.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BD45C232A53F1FA00AD360B /* ContentViewSpectogram.swift */; };
 		7BD45C282A53F21400AD360B /* MelSpectrogram.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BD45C262A53F21400AD360B /* MelSpectrogram.swift */; };
@@ -106,6 +107,7 @@
 		7BB8ED5C2A839B3F0023A769 /* AudioKit.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioKit.swift; sourceTree = "<group>"; };
 		7BC1315E2A84A8E200B52471 /* PitchTap.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PitchTap.swift; sourceTree = "<group>"; };
 		7BC131602A84A94200B52471 /* SoundpipeAudioKit */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = SoundpipeAudioKit; path = "../../../Library/Developer/Xcode/DerivedData/Cookbook-arkpnhubbpxqmcffjovwnocdnxhv/SourcePackages/checkouts/SoundpipeAudioKit"; sourceTree = "<group>"; };
+		7BCB034D2A8500640011D381 /* Sequencer_C_To_G.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; name = Sequencer_C_To_G.wav; path = ../../../../Downloads/Sequencer_C_To_G.wav; sourceTree = "<group>"; };
 		7BD45C222A53F1F900AD360B /* AudioSpectrogram.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AudioSpectrogram.swift; sourceTree = "<group>"; };
 		7BD45C232A53F1FA00AD360B /* ContentViewSpectogram.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ContentViewSpectogram.swift; sourceTree = "<group>"; };
 		7BD45C262A53F21400AD360B /* MelSpectrogram.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MelSpectrogram.swift; sourceTree = "<group>"; };
@@ -260,7 +262,6 @@
 				7BF840AA2A7E7C71000287C4 /* C_Octave_To_C_Piano_And_Down.wav */,
 				7BF840A72A7E1D2A000287C4 /* C_Octave_To_C_Piano.wav */,
 				7BF840A62A7E1D2A000287C4 /* C_Octave_To_C_Sine.wav */,
-				7BB8ED5A2A837BA20023A769 /* iPhone_Three_Octaves.m4a */,
 				7BF840A02A7E0D7E000287C4 /* CGC.wav */,
 				7B218B722A4257C000EA4B08 /* Ex1_Sine_9_Notes.wav */,
 				7B218B762A42E98600EA4B08 /* Ex1_Sine.wav */,
@@ -278,7 +279,9 @@
 				7BF49F1E2A81022500E6948B /* iPhone_Ex1_Piano.m4a */,
 				7BF49F202A8107DE00E6948B /* iPhone_Ex4_Piano.m4a */,
 				7BF49F222A810F6900E6948B /* iPhone_Ex27_Piano.m4a */,
+				7BB8ED5A2A837BA20023A769 /* iPhone_Three_Octaves.m4a */,
 				7BF49F102A80D6AA00E6948B /* Quarter1Eigth2_Octave.m4a */,
+				7BCB034D2A8500640011D381 /* Sequencer_C_To_G.wav */,
 				7BF49F1C2A80F3B100E6948B /* SineUp_PianoDown_Octave.wav */,
 			);
 			path = Sounds;
@@ -429,6 +432,7 @@
 				7BFFDF582A46D5AF00C14F57 /* Example 6_SkyPad.wav in Resources */,
 				7BF49F1F2A81022500E6948B /* iPhone_Ex1_Piano.m4a in Resources */,
 				7BFFDF532A46D5AF00C14F57 /* Example 5_SkyPad.wav in Resources */,
+				7BCB034E2A8500640011D381 /* Sequencer_C_To_G.wav in Resources */,
 				7BF49F212A8107DE00E6948B /* iPhone_Ex4_Piano.m4a in Resources */,
 				7BF840AB2A7E7C71000287C4 /* C_Octave_To_C_Piano_And_Down.wav in Resources */,
 				7BFFDF592A46D5AF00C14F57 /* Example 7_SkyPad.wav in Resources */,
