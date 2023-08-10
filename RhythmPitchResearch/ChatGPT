@@ -52,7 +52,7 @@ Low-pass filter: Removes high-frequency components, retaining only the lower fre
 High-pass filter: Removes low-frequency components, keeping only the higher frequencies.
 Band-pass filter: Passes a specific range of frequencies and attenuates others. You can use a band-pass filter to focus on the frequency range of the piano notes.
 ===========
-Ghat GPT 4
+Chat GPT 4
 ===========
 
 Using swift I have an AVAudioFile of length 10 seconds recording an acoustic piano playing a melody with 10 notes. The sampling rate is 44100 per second for the input frame buffer which is a AVAudioPCMBuffer. I need to analyse the input frame values in the audio file to detect note onsets.
@@ -66,3 +66,11 @@ DEMO  https://www.youtube.com/watch?v=ZqpSb5p1xQo for libroasa demo
 
 
 Sequencer - https://onlinesequencer.net/
+
+=======================
+FFT
+=======================
+Using Apple swift on iOS I have an AVAudioFile of 10 seconds of a simple piano melody with 10 notes. The sampling rate is 44100 per second for the input frame buffer which is a AVAudioPCMBuffer. I have segmented the recording into frames of length 1024 samples each.
+I have correctly calculated the frame index number of every note onset in the recording.
+For note onset I then build a time domain array called TT of the amplitude values for the next 1024 amplitude values after the note onset's frame index number. I want to use the time domain values in TT to calculate the frequency of the note played at the note onset.
+What Swift code should I use to calcuate the frequency of each note onset?

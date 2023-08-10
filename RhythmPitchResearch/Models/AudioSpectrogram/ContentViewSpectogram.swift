@@ -21,6 +21,13 @@ struct ContentViewSpectogram: View {
                     }) {
                         Text("Test Read WAV File")
                     }
+                    Button(action: {
+                        noteAnalyzer.getFrequencies()
+                    }) {
+                        Text("Get Frequencies")
+                    }
+
+
 //                    HStack {
 //                        Button(action: {
 //                            audioSpectrogram.speed = 2.0
