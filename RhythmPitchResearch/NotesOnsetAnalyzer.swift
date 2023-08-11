@@ -12,9 +12,11 @@ class NoteOnset : CustomStringConvertible {
     var durationSeconds:Float = 0
     var amplitudeIncreaseThatTriggeredOnset:Float
     var dataValue:Float
+    var noteName = ""
+
     var frequency:Float?
     var frequencyMagnitude:Float?
-    var noteName = ""
+    var frequencyTime:Float?
     
     init (onsetFrame:Int, dataValue:Float, amplitudeIncreaseThatTriggeredOnset:Float, frameCount:Int? = nil) {
         self.onsetFrame = onsetFrame
@@ -26,8 +28,9 @@ class NoteOnset : CustomStringConvertible {
     var description: String {
         let data = String(format: "%.4f", self.dataValue)
         let incr = String(format: "%.4f", self.amplitudeIncreaseThatTriggeredOnset)
-        var s = "Note Frame:\(self.onsetFrame) Time:\(String(format: "%.2f", self.onsetSeconds)) \tDataVal:\(data) \tIncr%:\(incr)"
-        
+        //var s = "Note Frame:\(self.onsetFrame) Time:\(String(format: "%.2f", self.onsetSeconds)) \tDataVal:\(data) \tIncr%:\(incr)"
+        var s = "Note Frame:\(self.onsetFrame) Time:\(String(format: "%.2f", self.onsetSeconds)) "
+
         if let frameCount = frameCount {
             let value = String(format: "%.2f", self.value)
             let seconds = String(format: "%.2f", self.durationSeconds)
@@ -35,6 +38,7 @@ class NoteOnset : CustomStringConvertible {
         }
         if let frequency = self.frequency {
             s += "\tFreqMag:\(String(format: "%.2f", frequencyMagnitude!))"
+            s += "\tFreqTime:\(String(format: "%.2f", frequencyTime!))"
             s += "\tFreq:\(String(format: "%.2f", frequency))"
             s += "\tName:\(self.noteName))"
         }
@@ -46,10 +50,13 @@ class FrequencyReading {
     var time:Float
     var magnitude:Float
     var frequency:Float
+    var wasMatched:Bool //was used to read a note frequency
+    
     init(time:Float, magnitude:Float, frequency:Float) {
         self.time = time
         self.magnitude = magnitude
         self.frequency = frequency
+        self.wasMatched = false
     }
 }
 
@@ -69,8 +76,8 @@ class NoteOnsetAnalyser {
     }
     
     func getUrl() -> URL? {
-        let name = "Sequencer_C_To_G" //iPhone_Ex1_Piano" //iPhone_Three_Octaves"
-        let ext = "wav"
+        let name = "iPhone-60BPS_ex1" //"Sequencer_C_To_G" //iPhone_Ex1_Piano" //iPhone_Three_Octaves"
+        let ext = "m4a"
         let noteAnalyzer = NoteOnsetAnalyser()
         //let name = "C_Octave_To_C_Piano_And_Down" //C_Octave_To_C_Piano"
         
@@ -85,15 +92,12 @@ class NoteOnsetAnalyser {
         
         let sliceLen = 8
         var frameIndex = startIndex
-        //var distanceFromMiddle = 1
         var ctr = 0
-        //var indexHitEdge = false
         
         while frameIndex < frames.count - sliceLen-1 {
             let frame = frames[frameIndex]
             let frameAvg = getAbsoluteAvg(frame)
             
-            //print("\(frameIndex),   \(str(frameAvg * 10,dec:4))")
             
             var prev:[Float] = []
             var next:[Float] = []
@@ -161,8 +165,8 @@ class NoteOnsetAnalyser {
     }
 
     func calcNoteOnsets(frames:[[Float]], samplingRate: Float, fitToExpected:Bool) -> [NoteOnset] {
-        //let givenValues:[Float] = [1,1,0.5,0.5,1,  2,2,  1,1,1,1,  4 ] //ex.1
-        let givenValues:[Float] = [1,1,1,1,1 ] //seq c -> G
+        let givenValues:[Float] = [1,1,0.5,0.5,1,  2,2,  1,1,1,1,  4 ] //ex.1
+        //let givenValues:[Float] = [1,1,1,1,1 ] //seq c -> G
 
         //let givenValues = [1,0.5,0.5,1,1,   1,1,1,1,   2,1,1,  4] //ex.4
         //let givenValues = [2,2,  1,1,2,   0.5,0.5,2,1,  4] //ex.7
@@ -170,12 +174,12 @@ class NoteOnsetAnalyser {
         //let givenValues = [2, 2, 1, 1, 2, 0.5, 0.5, 2, 1, 4] //ex.27
 
         var noteOnsets:[NoteOnset] = []
-        var framesIndex = 10
+        var framesIndex = 10 //The index used to acccess the frames
         let initialThresholdIncrease:Float = 1.5
-        var currentThresholdIncrease = initialThresholdIncrease
+        var currentThresholdIncrease = initialThresholdIncrease //The amplitude increase that designates a note onset
         
-        var framesPerUnitValue:Int?
-        var nextPredictedIndex:Int?
+        var framesPerUnitValue:Int? //The calculated number of frames in a 1/4 note based on the current tempo
+        var nextPredictedIndex:Int? //The next note offset index based on the note values in the given melody and the current tempo
         var continueAnalysis = true
         var thresholdAdjustCtr = 0
         
@@ -196,11 +200,13 @@ class NoteOnsetAnalyser {
 //                      "threshold", str(currentThresholdIncrease, dec: 6),
 //                      "tempo", framesPerUnitValue ?? ""
 //                )
-
+                
+                /// Calculate what the amplitude onset magnitude should be for a new note onset
+                /// It will be adjusted to be less or more depending on how far from the predicted index we are
                 if fitToExpected && nextPredictedIndex != nil {
                     let discrep = noteOnset.onsetFrame - nextPredictedIndex!
                     //let allowed1 = Int(Float(framesPerUnitValue!) * givenValues[noteOnsets.count-1] * 0.5)
-                    let allowed = Int(Float(framesPerUnitValue!) * 0.40)
+                    let allowed = Int(Float(framesPerUnitValue!) * 0.40) //TODO ????
                     if abs(discrep) >= allowed {
                         thresholdAdjustCtr += 1
                         if thresholdAdjustCtr > 100  {
@@ -237,9 +243,12 @@ class NoteOnsetAnalyser {
                 
                 let framesDiff:Int = noteOnset.onsetFrame - noteOnsets[noteOnsets.count-1].onsetFrame
                 noteOnsets[noteOnsets.count - 1].frameCount = framesDiff
-                
+//                if noteOnset.onsetFrame == 239 {
+//                    print("+++++++++++++")
+//                }
+
                 if noteOnsets.count >= 1 {
-                    //calculate tempo over all the notes played
+                    ///to pedict the position of the next not onset calculate the current playing tempo using all the notes already played
                     if fitToExpected {
                         var tempos:[Float] = []
                         for i in 0..<noteOnsets.count  {
@@ -251,7 +260,7 @@ class NoteOnsetAnalyser {
                                 tempoVal = Float(noteOnsets[i].frameCount!) / Float(givenValues[i])
                             }
                             tempos.append(tempoVal)
-                            if tempos.count > 2 {
+                            if tempos.count > 3 {
                                 //just take the most recent tempos
                                 break
                             }
@@ -278,13 +287,25 @@ class NoteOnsetAnalyser {
                     }
                     nextPredictedIndex = noteOnset.onsetFrame + Int((givenValues[noteOnsets.count-1] * Float(framesPerUnitValue!)))
                 }
-                framesIndex = noteOnset.onsetFrame + 4 //???? TODO
-                currentThresholdIncrease = initialThresholdIncrease
                 
-                print(" Stored -->", noteOnset)
-                if noteOnset.onsetFrame == 136 {
-                    print("+++++++++++++")
+                //Move the frames index to find the next note onset
+                let framesInc:Int
+                if let nextPredictedIndex = nextPredictedIndex {
+                    let predictedIncrease = nextPredictedIndex - noteOnset.onsetFrame
+                    framesInc = Int(Float(predictedIncrease) / 2.0)
                 }
+                else {
+                    if let framesPerUnitValue = framesPerUnitValue {
+                        framesInc = Int(Float(framesPerUnitValue) / 4.0)
+                    }
+                    else {
+                        framesInc = 12 //Why??
+                    }
+                }
+                framesIndex = noteOnset.onsetFrame + framesInc
+                
+                currentThresholdIncrease = initialThresholdIncrease
+                print(" Stored -->", noteOnset)
             }
             else {
                 noteOnsets.append(noteOnset)
@@ -324,13 +345,10 @@ class NoteOnsetAnalyser {
                     log += "\tAmplitude: \(self.str(amplitudes[0]))"
                     log += "\tPitch: \(self.str(pitches[0].magnitude.magnitude)) Hz"
                 }
-                else {
-                    log += "\(String(format: "%.2f", timeSecs))  ,  \(self.str(amplitudes[0])) , \(self.str(pitches[0].magnitude.magnitude))"
-                }
                 self.frequencyReadings.append(FrequencyReading(time: timeSecs,
-                                                               magnitude: amplitudes[0],
+                                                               magnitude: amplitudes[0], //TODO collect more than index 0?
                                                       frequency: pitches[0].magnitude.magnitude))
-                print(log)
+                //print(log)
                 self.lastPitch = pitches[0].magnitude
             //}
             self.handlerCallNum += 1
@@ -383,26 +401,65 @@ class NoteOnsetAnalyser {
         return "\(noteNamesWithSharps[index])\(octave)"
         //data.noteNameWithFlats = "\(noteNamesWithFlats[index])\(octave)"
     }
+    
+    ///Look for the closest frequency reading in time for each note
+    ///Match on lookAhead secs after the note's onset time
+    func matchFrequenciesToOnsets(noteOnsets:[NoteOnset]) {
+        
+        if false {
+            ///tried smoothing to get around spikes in the frequency reading but smoothing made most notes wrong
+            var smoothedFrequencyReadings:[FrequencyReading] = []
+            let smoothSpan = 1
+            for i in 0..<self.frequencyReadings.count {
+                let frequencyReading = self.frequencyReadings[i]
+                if i <= smoothSpan || i >= self.frequencyReadings.count - smoothSpan {
+                    smoothedFrequencyReadings.append(frequencyReading)
+                    continue
+                }
+                var smoothedFrequency:Float = 0
+                for j in 0-smoothSpan...smoothSpan {
+                    smoothedFrequency += self.frequencyReadings[i + j].frequency
+                }
+                let smoothedFrequencyAvg = smoothedFrequency / Float((2 * smoothSpan + 1))
+                let smoothed = FrequencyReading(time: frequencyReading.time,
+                                                magnitude: frequencyReading.magnitude,
+                                                frequency: smoothedFrequencyAvg)
+                smoothedFrequencyReadings.append(smoothed)
+            }
+            self.frequencyReadings = smoothedFrequencyReadings
+        }
 
-    func matchFrequenciesToOnsets(frequencyReadings:[FrequencyReading], noteOnsets:[NoteOnset]) {
         for noteOnset in noteOnsets {
             var lowest:Float?
             var lowestIndex:Int = 0
-            for i in 0..<frequencyReadings.count {
-                
-                let frequencyReading = frequencyReadings[i]
-                if frequencyReading.magnitude < 0.28 {
+            
+            for i in 0..<self.frequencyReadings.count {
+                let frequencyReading = self.frequencyReadings[i]
+                if frequencyReading.magnitude < 0.15 {
                     continue
                 }
-                let diff = abs(noteOnset.onsetSeconds + 0.20 - frequencyReading.time) //TODO ????
+                let lookAhead = (noteOnset.durationSeconds / 4.0) ///0.25 { //TODO ????
+                if frequencyReading.time < noteOnset.onsetSeconds + lookAhead {
+                    continue
+                }
+
+                let diff = frequencyReading.time - noteOnset.onsetSeconds
                 if lowest == nil || diff < lowest! {
                     lowest = diff
                     lowestIndex = i
                 }
             }
-            noteOnset.frequency = frequencyReadings[lowestIndex].frequency
-            noteOnset.frequencyMagnitude = frequencyReadings[lowestIndex].magnitude
+            noteOnset.frequency = self.frequencyReadings[lowestIndex].frequency
+            noteOnset.frequencyMagnitude = self.frequencyReadings[lowestIndex].magnitude
+            noteOnset.frequencyTime = self.frequencyReadings[lowestIndex].time
+            self.frequencyReadings[lowestIndex].wasMatched = true
             noteOnset.noteName = getNoteName(pitch: noteOnset.frequency!)
+        }
+        
+        print("\n=== Frequency Readings")
+        for f in self.frequencyReadings {
+            let log = "\(String(format: "%.2f", f.time))  ,  \(f.wasMatched ? 1 : 0)    ,   \(self.str(f.frequency)) , \(self.str(f.magnitude))"
+            print(log)
         }
     }
     
@@ -468,7 +525,7 @@ class NoteOnsetAnalyser {
                                                 fitToExpected: i==0)
                 
                 self.getFrequencies {
-                    self.matchFrequenciesToOnsets(frequencyReadings: self.frequencyReadings, noteOnsets: noteOnsets)
+                    self.matchFrequenciesToOnsets(noteOnsets: noteOnsets)
                     print("\n===== \(i) Returned notes =====")
                     for i in 0..<noteOnsets.count {
                         let noteOnset = noteOnsets[i]
@@ -483,6 +540,12 @@ class NoteOnsetAnalyser {
         catch {
             print("Error loading file: \(error.localizedDescription)")
         }
+    }
+    
+    func getAvg(_ inArray:[Float]) -> Float {
+        let sum = inArray.reduce(0, +)
+        let average = sum / Float(inArray.count)
+        return average
     }
     
     func str(_ inVal:Float?, dec:Int=2) -> String {
